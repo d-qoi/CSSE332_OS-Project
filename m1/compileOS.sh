@@ -1,3 +1,6 @@
+#!/bin/bash
+# Milestone 1 script
+# David Mehl, Christian Balcom, and Alexander Hirschfeld
 echo Starting...
 echo Assembling bootload.asm
 nasm bootload.asm

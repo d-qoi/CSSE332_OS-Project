@@ -1,4 +1,8 @@
-
+/*
+  Milestone 1 kernel.c file
+  Group 3-C
+  David Mehl, Christian Balcom, and Alexander Hirschfeld
+ */
 #define TEXT_COLOR 0x7
 #define VIDEO_BASE_ADDR 0xB000
 #define SCREEN_BASE_ADDR 0x8000
