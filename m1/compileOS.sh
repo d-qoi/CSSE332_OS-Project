@@ -18,5 +18,11 @@ ld86 -o kernel -d kernel.o kernel_asm.o
 echo Completed compiling, assembling, and linking
 echo Starting to copy to floppya.img
 dd if=kernel of=floppya.img bs=512 conv=notrunc seek=3
+echo All good
+echo Cleaning up...
+rm kernel
+rm kernel.o
+rm kernel_asm.o
+rm bootload
 echo Done
 
