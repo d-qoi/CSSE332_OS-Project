@@ -15,7 +15,7 @@ char string[12] = "Hello World";
 
 int main() {
   int i;
-  for (i = 0; i < 12; i++) {
+  for (i = 0; i < 11; i++) {
     putInMemory(VIDEO_BASE_ADDR, SCREEN_LOCATION_CHAR(1, i), string[i]);
     putInMemory(VIDEO_BASE_ADDR, SCREEN_LOCATION_COLOR(1, i), TEXT_COLOR);
     
