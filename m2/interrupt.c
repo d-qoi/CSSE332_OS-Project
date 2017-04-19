@@ -24,7 +24,7 @@ void readString(char * buffer) {
       }
     }else {
 
-      if (temp == NEWLINE) {
+      if (temp == ENTER) {
 	PRINT_CHAR(C_RET);
 	PRINT_CHAR(LINE_FEED);
 	break;
