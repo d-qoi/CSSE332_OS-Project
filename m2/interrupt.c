@@ -14,7 +14,7 @@ void readString(char * buffer) {
   int ind = 0;
   char temp;
   while(1) {
-    if (ind >= 77)
+    if (ind >= 76)
       break;
     temp = GET_CHAR;
     if (temp == BACKSPACE) {
@@ -25,6 +25,7 @@ void readString(char * buffer) {
     }else {
 
       if (temp == NEWLINE) {
+	PRINT_CHAR(C_RET);
 	PRINT_CHAR(LINE_FEED);
 	break;
       }
@@ -33,6 +34,7 @@ void readString(char * buffer) {
       ind++;
     }
   }
+  buffer[ind++] = C_RET;
   buffer[ind++] = LINE_FEED;
   buffer[ind] = NULL_TERM;
   return;
