@@ -1,0 +1,5 @@
+#include "interrupt.h"
+
+void printString(char * string) {
+
+}
