@@ -23,9 +23,12 @@ void readString(char * buffer) {
 	PRINT_CHAR(BACKSPACE);
       }
     }else {
-      PRINT_CHAR(temp);
-      if (temp == NEWLINE)
+
+      if (temp == NEWLINE) {
+	PRINT_CHAR(LINE_FEED);
 	break;
+      }
+      PRINT_CHAR(temp);
       buffer[ind] = temp;
       ind++;
     }

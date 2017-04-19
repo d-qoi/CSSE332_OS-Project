@@ -24,7 +24,7 @@ echo All good
 echo Cleaning up...
 rm kernel
 rm kernel.o
+rm interrupt.o
 rm kernel_asm.o
 rm bootload
 echo Done
-
