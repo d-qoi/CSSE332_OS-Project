@@ -23,11 +23,11 @@ void readString(char * buffer) {
 	PRINT_CHAR(BACKSPACE);
       }
     }else {
+      PRINT_CHAR(temp);
       if (temp == NEWLINE)
 	break;
       buffer[ind] = temp;
       ind++;
-      PRINT_CHAR(temp);
     }
   }
   buffer[ind++] = LINE_FEED;
