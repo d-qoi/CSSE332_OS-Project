@@ -24,7 +24,7 @@ int main() {
     putInMemory(VIDEO_BASE_ADDR, SCREEN_LOCATION_COLOR(1, i), TEXT_COLOR);
     
   }
-  printString("Hello World\n\0");
+  printString("Hello World\r\n\0");
 
   printString("Enter a line: \0");
   readString(line);
