@@ -9,3 +9,28 @@ void printString(char * string) {
     next = string[ind];
   }
 }
+
+void readString(char * buffer) {
+  int ind = 0;
+  char temp;
+  while(1) {
+    if (ind >= 77)
+      break;
+    temp = GET_CHAR;
+    if (temp == BACKSPACE) {
+      if (ind > 0) {
+	ind--;
+	PRINT_CHAR(BACKSPACE);
+      }
+    }else {
+      buffer[ind] = temp;
+      ind++;
+      PRINT_CHAR(temp);
+      if (temp == NEWLINE)
+	break;
+    }
+  }
+  buffer[ind++] = LINE_FEED;
+  buffer[ind] = NULL_TERM;
+  return;
+}
