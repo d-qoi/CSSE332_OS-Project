@@ -31,8 +31,8 @@ Definitions of interrupt commands
 
 #define READ_SECTOR(data, sector)                                       \
   interrupt(BIOS_READ_SECT, data,                                       \
-            MOVE_H(mod(sector,36)) + mod(sector, 18) + 1,               \
-            MOVE_H(mod(mod(sector, 18), 2)) + 0)
+            MOVE_H(div(sector,36)) + mod(sector, 18) + 1,               \
+            MOVE_H(mod(div(sector, 18), 2)) + 0)
 
 void printString(char * string);
 
