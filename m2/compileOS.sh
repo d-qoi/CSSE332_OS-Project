@@ -27,6 +27,7 @@ echo Cleaning up...
 rm kernel
 rm kernel.o
 rm interrupt.o
+rm math.o
 rm kernel_asm.o
 rm bootload
 echo Done
