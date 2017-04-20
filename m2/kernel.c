@@ -19,6 +19,8 @@ char string[12] = "Hello World";
 int main() {
   int i;
   char line[80];
+  char buffer[512];
+  
   for (i = 0; i < 11; i++) {
     putInMemory(VIDEO_BASE_ADDR, SCREEN_LOCATION_CHAR(1, i), string[i]);
     putInMemory(VIDEO_BASE_ADDR, SCREEN_LOCATION_COLOR(1, i), TEXT_COLOR);
@@ -29,6 +31,9 @@ int main() {
   printString("Enter a line: \0");
   readString(line);
   printString(line);
+
+  readSector(buffer, 30);
+  printString(buffer);
   
   /* Done, so hang */
   while(1);
