@@ -9,7 +9,10 @@ Definitions of interrupt commands
 
 #define BIOS_PRINT_CHAR 0x10
 #define BIOS_READ_CHAR 0x16
-#define BIOS_READ_SECT 0x13
+#define BIOS_DISK_INTERACT 0x13
+
+#define DISK_READ 2
+#define DISK_WRITE 1 /* To be determined later */
 
 #define PRINT_COMMAND 0xE
 
@@ -29,9 +32,9 @@ Definitions of interrupt commands
 
 #define GET_CHAR interrupt(BIOS_READ_CHAR, 0, 0, 0, 0)
 
-#define READ_SECTOR(data, sector)                                       \
-  interrupt(BIOS_READ_SECT, data,                                       \
-            MOVE_H(div(sector,36)) + mod(sector, 18) + 1,               \
+#define READ_SECTOR(data, sector)                                        \
+  interrupt(BIOS_DISK_INTERACT, MOVE_H(DISK_READ) + 1, data,             \
+            MOVE_H(div(sector, 36)) + mod(sector, 18) + 1,               \
             MOVE_H(mod(div(sector, 18), 2)) + 0)
 
 void printString(char * string);
