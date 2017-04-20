@@ -15,8 +15,9 @@ echo Completed Milestone 1 Part 4
 echo Starting Milestone 1 Part 6
 bcc -ansi -c -o kernel.o kernel.c
 bcc -ansi -c -o interrupt.o interrupt.c
+bcc -ansi -c -o math.o math.c
 as86 kernel.asm -o kernel_asm.o
-ld86 -o kernel -d kernel.o kernel_asm.o interrupt.o
+ld86 -o kernel -d kernel.o kernel_asm.o interrupt.o math.o
 echo Completed compiling, assembling, and linking
 echo Starting to copy to floppya.img
 dd if=kernel of=floppya.img bs=512 conv=notrunc seek=3

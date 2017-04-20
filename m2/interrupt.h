@@ -21,13 +21,13 @@ Definitions of interrupt commands
 
 #define MOVE_H(val) val*256
 
-#define PRINT_CHAR(character)                                           \
+#define PRINT_CHAR(character)						\
   interrupt(BIOS_PRINT_CHAR,                                            \
             MOVE_H(PRINT_COMMAND) + character,                          \
             0, 0, 0)
 
 
-#define GET_CHAR interrupt(BIOS_PRINT_CHAR, 0, 0, 0, 0)
+#define GET_CHAR interrupt(BIOS_READ_CHAR, 0, 0, 0, 0)
 
 #define READ_SECTOR(data, sector)                                       \
   interrupt(BIOS_READ_SECT, data,                                       \

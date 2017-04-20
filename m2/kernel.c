@@ -32,7 +32,7 @@ int main() {
   readString(line);
   printString(line);
 
-  readSector(buffer, 30);
+  /*READ_SECTOR(buffer, 30);*/
   printString(buffer);
   
   /* Done, so hang */
