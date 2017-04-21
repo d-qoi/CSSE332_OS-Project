@@ -1,3 +1,8 @@
+/*
+  Milestone 2 interrupt.c file
+  Group 3-C
+  David Mehl, Christian Balcom, and Alexander Hirschfeld
+ */
 #include "interrupt.h"
 
 void printString(char * string) {

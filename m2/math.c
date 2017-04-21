@@ -1,3 +1,9 @@
+/*
+  Milestone 2 math.c file
+  Group 3-C
+  David Mehl, Christian Balcom, and Alexander Hirschfeld
+ */
+
 int mod(int a, int b) {
   while(a > b)
     a = a - b;

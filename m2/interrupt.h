@@ -1,3 +1,8 @@
+/*
+  Milestone 2 interrupt.h file
+  Group 3-C
+  David Mehl, Christian Balcom, and Alexander Hirschfeld
+ */
 #include "math.h"
 
 #ifndef _INTERRUPT_H_
