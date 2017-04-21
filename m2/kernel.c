@@ -32,7 +32,7 @@ int main() {
   readString(line);
   printString(line);
 
-  READ_SECTOR(buffer, 30);
+  readSector(buffer, 30);
   printString(buffer);
 
   makeInterrupt21();
