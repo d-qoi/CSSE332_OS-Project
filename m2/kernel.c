@@ -34,6 +34,10 @@ int main() {
 
   READ_SECTOR(buffer, 30);
   printString(buffer);
+
+  makeInterrupt21();
+  interrupt(0x21,1,line,0,0);
+  interrupt(0x21,0,line,0,0);
   
   /* Done, so hang */
   while(1);

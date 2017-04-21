@@ -41,5 +41,7 @@ void printString(char * string);
 
 void readString(char * buffer);
 
+void handleInterrupt21(int, int, int, int);
+
 #endif
 

@@ -39,3 +39,17 @@ void readString(char * buffer) {
   buffer[ind] = NULL_TERM;
   return;
 }
+
+
+void handleInterrupt21(int ax, int bx, int cx, int dx) {
+  switch (ax) {
+    case 0:
+      printString((char *) bx);
+      break;
+    case 1:
+      readString((char *) bx);
+      break;
+    case 2:
+      READ_SECTOR((char *) bx, cx);
+  }
+}
