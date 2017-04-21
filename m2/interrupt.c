@@ -45,6 +45,10 @@ void readString(char * buffer) {
   return;
 }
 
+void readSector(char * buffer, int sector) {
+  READ_SECTOR(buffer, sector);
+}
+
 
 void handleInterrupt21(int ax, int bx, int cx, int dx) {
   switch (ax) {

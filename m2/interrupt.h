@@ -46,6 +46,8 @@ void printString(char * string);
 
 void readString(char * buffer);
 
+void readSector(char * buffer, int sector);
+
 void handleInterrupt21(int, int, int, int);
 
 #endif
