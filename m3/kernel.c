@@ -1,5 +1,5 @@
 /*
-  Milestone 2 kernel.c file
+  Milestone 3 kernel.c file
   Group 3-C
   David Mehl, Christian Balcom, and Alexander Hirschfeld
  */
@@ -14,32 +14,15 @@
 #define SCREEN_LOCATION_COLOR(line, character)\
   SCREEN_BASE_ADDR + ((line - 1) * 80 + character) * 2 + 1
 
-char string[12] = "Hello World";
-
 int main() {
-  int i;
-  char line[80];
-  char buffer[512];
-  
-  for (i = 0; i < 11; i++) {
-    putInMemory(VIDEO_BASE_ADDR, SCREEN_LOCATION_CHAR(1, i), string[i]);
-    putInMemory(VIDEO_BASE_ADDR, SCREEN_LOCATION_COLOR(1, i), TEXT_COLOR);
-    
-  }
+  char buffer[13312];  /* this is the maximum size of a file */
+
   printString("Hello World\r\n\0");
-
-  printString("Enter a line: \0");
-  readString(line);
-  printString(line);
-
-  readSector(buffer, 30);
-  printString(buffer);
-
-  makeInterrupt21();
-  interrupt(0x21,1,line,0,0);
-  interrupt(0x21,0,line,0,0);
   
-  /* Done, so hang */
-  while(1);
-  return 0;
+  makeInterrupt21();
+  /* read the file into buffer */
+  interrupt(0x21, 3, "messag\0", buffer, 0);  
+  printString("Step 2!\r\n\0");
+  interrupt(0x21, 0, buffer, 0, 0);	    /* print out the file */
+  while(1);	/* hang */
 }
