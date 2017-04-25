@@ -26,6 +26,8 @@ void readString(char * buffer) {
       if (ind > 0) {
 	ind--;
 	PRINT_CHAR(BACKSPACE);
+	PRINT_CHAR(' ');
+	PRINT_CHAR(BACKSPACE);
       }
     }else {
 
