@@ -1,9 +1,8 @@
 /*
-  Milestone 2 math.h file
+  Milestone 3 kernel/lib/math.h
   Group 3-C
   David Mehl, Christian Balcom, and Alexander Hirschfeld
  */
-
 
 /* General functions that we need for maths */
 

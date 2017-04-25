@@ -1,8 +1,10 @@
 /*
-  Milestone 2 math.c file
+  Milestone 3 kernel/lib/math.c
   Group 3-C
   David Mehl, Christian Balcom, and Alexander Hirschfeld
  */
+ 
+#include "math.h"
 
 int mod(int a, int b) {
   while(a > b)

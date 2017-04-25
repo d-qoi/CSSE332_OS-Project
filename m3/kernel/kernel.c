@@ -1,5 +1,5 @@
 /*
-  Milestone 3 kernel.c file
+  Milestone 3 kernel/kernel.c
   Group 3-C
   David Mehl, Christian Balcom, and Alexander Hirschfeld
  */

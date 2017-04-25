@@ -1,10 +1,10 @@
 /*
-  Milestone 2 interrupt.c file
+  Milestone 3 kernel/io.c
   Group 3-C
   David Mehl, Christian Balcom, and Alexander Hirschfeld
  */
-#include "interrupt.h"
-#include "fs.h"
+
+#include "io.h"
 
 void printString(char * string) {
   int ind = 0;
@@ -50,21 +50,4 @@ void readString(char * buffer) {
 
 void readSector(char * buffer, int sector) {
   READ_SECTOR(buffer, sector);
-}
-
-void handleInterrupt21(int ax, int bx, int cx, int dx) {
-  switch (ax) {
-    case 0:
-      printString((char *) bx);
-      break;
-    case 1:
-      readString((char *) bx);
-      break;
-    case 2:
-      readSector((char *) bx, cx);
-      break;
-    case 3:
-      readFile((char *) bx, (char *) cx);
-      break;
-  }
 }

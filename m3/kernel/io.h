@@ -1,17 +1,13 @@
 /*
-  Milestone 3 interrupt.h file
+  Milestone 3 kernel/io.c
   Group 3-C
   David Mehl, Christian Balcom, and Alexander Hirschfeld
  */
  
-#include "math.h"
-
-#ifndef _INTERRUPT_H_
-#define _INTERRUPT_H_
-
-/*
-Definitions of interrupt commands
-*/
+#include "lib/math.h"
+ 
+#ifndef _IO_H_
+#define _IO_H_
 
 #define BIOS_PRINT_CHAR 0x10
 #define BIOS_READ_CHAR 0x16
@@ -49,7 +45,4 @@ void readString(char * buffer);
 
 void readSector(char * buffer, int sector);
 
-void handleInterrupt21(int, int, int, int);
-
 #endif
-
