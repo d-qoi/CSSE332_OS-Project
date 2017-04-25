@@ -4,7 +4,6 @@
   David Mehl, Christian Balcom, and Alexander Hirschfeld
  */
 #include "interrupt.h"
-#include "fs.h"
 
 void printString(char * string) {
   int ind = 0;
@@ -26,6 +25,8 @@ void readString(char * buffer) {
     if (temp == BACKSPACE) {
       if (ind > 0) {
 	ind--;
+	PRINT_CHAR(BACKSPACE);
+	PRINT_CHAR(' ');
 	PRINT_CHAR(BACKSPACE);
       }
     }else {
@@ -50,6 +51,7 @@ void readSector(char * buffer, int sector) {
   READ_SECTOR(buffer, sector);
 }
 
+
 void handleInterrupt21(int ax, int bx, int cx, int dx) {
   switch (ax) {
     case 0:
@@ -59,10 +61,6 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
       readString((char *) bx);
       break;
     case 2:
-      readSector((char *) bx, cx);
-      break;
-    case 3:
-      readFile((char *) bx, (char *) cx);
-      break;
+      READ_SECTOR((char *) bx, cx);
   }
 }
