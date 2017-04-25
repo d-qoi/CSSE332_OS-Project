@@ -22,6 +22,7 @@ make
 
 echo Building floppya.img
 cd $project/build
+rm -f floppya.img
 dd if=/dev/zero of=floppya.img bs=512 count=2880
 dd if=$project/bootloader/bootload of=floppya.img bs=512 count=1 conv=notrunc
 dd if=map.img                      of=floppya.img bs=512 count=1 seek=1 conv=notrunc
@@ -35,11 +36,13 @@ make
 echo Copying userspace to floppya.img
 cd $project/build
 for filename in $project/userspace/build/*; do
-  ./tools/loadFile "$filename"
+  ./tools/loadFile "$filename" $(basename $filename)
 done
 
 echo Cleaning up...
 cd $project/kernel
+make clean
+cd $project/build/tools
 make clean
 cd $project/userspace
 make clean

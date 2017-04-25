@@ -41,6 +41,8 @@
 
 void printString(char * string);
 
+void println(char * string);
+
 void readString(char * buffer);
 
 void readSector(char * buffer, int sector);

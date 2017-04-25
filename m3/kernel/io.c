@@ -16,6 +16,15 @@ void printString(char * string) {
   }
 }
 
+void println(char * string) {
+  char lineEnd[3];
+  lineEnd[0] = '\n';
+  lineEnd[1] = '\r';
+  lineEnd[2] = '\0';
+  printString(string);
+  printString(lineEnd);
+}
+
 void readString(char * buffer) {
   int ind = 0;
   char temp;

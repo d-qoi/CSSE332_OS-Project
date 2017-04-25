@@ -10,7 +10,7 @@
 /*
 Definitions of interrupt commands
 */
-
+int executeProgram(char *, int);
 void handleInterrupt21(int, int, int, int);
 
 #endif

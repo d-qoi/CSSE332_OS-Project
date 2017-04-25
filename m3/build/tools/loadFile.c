@@ -4,13 +4,15 @@
 //Loads a file into the file system
 //This should be compiled with gcc and run outside of the OS
 
+// Modified by Christian Balcom to support a second argument (new filename)
+
 #include <stdio.h>
 
 main(int argc, char* argv[])
 {
 	int i;
 
-	if (argc<2)
+	if (argc<3)
 	{
 		printf("Specify file name to load\n");
 		return;
@@ -63,9 +65,9 @@ main(int argc, char* argv[])
 	//copy the name over
 	for (i=0; i<6; i++)
 	{
-		if(argv[1][i]==0)
+		if(argv[2][i]==0)
 			break;
-		dir[dirindex+i]=argv[1][i];
+		dir[dirindex+i]=argv[2][i];
 	}
 
 	dirindex=dirindex+6;

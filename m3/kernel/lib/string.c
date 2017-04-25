@@ -11,10 +11,10 @@ char * strcat(char * a, char * b) {
   while (*a != '\0')
     a++;
   while (*b != '\0') {
-    a = b;
+    *a = *b;
     a++;
     b++;
   }
-  a = '\0';
+  *a = '\0';
   return tmp;
 }
