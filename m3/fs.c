@@ -26,7 +26,7 @@
 			for (k = 0; k < 26; k++) {
 				if (dir[i*32 + 6 + k] == 0x0)
 					break;
-				readSector(&buffer + 512*k, dir[i*32 + 6 + k]);
+				readSector(buffer + 512*k, dir[i*32 + 6 + k]);
 			}
 			return;
 		}
