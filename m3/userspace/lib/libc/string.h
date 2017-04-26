@@ -1,5 +1,5 @@
 /*
-  Milestone 3 kernel/lib/string.h
+  Milestone 3 userspace/lib/libc/string.h
   Group 3-C
   David Mehl, Christian Balcom, and Alexander Hirschfeld
  */
@@ -8,7 +8,7 @@
 #define _LIB_STRING
 
 char * strcat(char *, char *);
-char * strchr(const char *, char);
+char * strchr(char *, char);
 void * memcpy(void *, const void *, int count);
 void * memset(void *s, int c, int count);
 

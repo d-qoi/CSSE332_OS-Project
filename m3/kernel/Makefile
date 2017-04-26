@@ -20,7 +20,6 @@ interrupt.o: interrupt.c
 io.o: io.c
 	bcc $(CFLAGS) io.c -o io.o
 	
-	
 fs.o: fs.c
 	bcc $(CFLAGS) fs.c -o fs.o
 	
@@ -32,4 +31,4 @@ lib/string.o: lib/string.c
 
 ## Remove all the compilation and debugging files
 clean: 
-	rm -f kernel asm/kernel_asm.o kernel.o interrupt.o fs.o lib/math.o lib/string.o
+	rm -f kernel asm/kernel_asm.o kernel.o interrupt.o fs.o io.o lib/math.o lib/string.o

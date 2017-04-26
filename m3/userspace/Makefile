@@ -2,16 +2,30 @@
 # Team 3-C
 # David Mehl, Christian Balcom, and Alexander Hirschfeld
 
-CFLAGS = -ansi -c
+CFLAGS = -ansi -c -Ilib/libc
 
-## Collect all files into the build directory, they will be inserted 
-## into the filesystem by compileOS.sh
-userspace: var/message.txt bin/tstprg bin/tstpr2
-	mkdir -p build
-	cp var/message.txt build
-	cp bin/tstprg build
-	cp bin/tstpr2 build
+all: bin/shell bin/type
 
-## Remove temporary userspace
+bin/type: src/type.o lib/libc/stdio.o lib/libc/string.o lib/lib_asm.o
+	ld86 -o bin/type -d src/type.o lib/libc/stdio.o lib/libc/string.o lib/lib_asm.o
+
+src/type.o: src/type.c
+	bcc $(CFLAGS) -o src/type.o src/type.c
+
+bin/shell: src/shell.o lib/libc/stdio.o lib/libc/string.o lib/lib_asm.o
+	ld86 -o bin/shell -d src/shell.o lib/libc/stdio.o lib/libc/string.o lib/lib_asm.o
+
+src/shell.o: src/shell.c
+	bcc $(CFLAGS) -o src/shell.o src/shell.c
+	
+lib/libc/stdio.o: lib/libc/stdio.c
+	bcc $(CFLAGS) -o lib/libc/stdio.o lib/libc/stdio.c
+
+lib/libc/string.o: lib/libc/string.c
+	bcc $(CFLAGS) -o lib/libc/string.o lib/libc/string.c
+	
+lib/lib_asm.o: lib/lib.asm
+	as86 lib/lib.asm -o lib/lib_asm.o
+
 clean: 
-	rm -rf build
+	rm -rf lib/libc/*.o src/*.o bin/shell

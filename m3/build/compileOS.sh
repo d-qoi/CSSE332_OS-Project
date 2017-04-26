@@ -6,7 +6,6 @@
 echo Starting...
 cd `dirname $0`
 project="`pwd`/.."
-echo $project
 
 echo Assembling bootloader
 cd $project/bootloader
@@ -29,21 +28,19 @@ dd if=map.img                      of=floppya.img bs=512 count=1 seek=1 conv=not
 dd if=dir.img                      of=floppya.img bs=512 count=1 seek=2 conv=notrunc
 dd if=$project/kernel/kernel       of=floppya.img bs=512 seek=3 conv=notrunc
 
+echo Building userspace
+cd $project/userspace
+make
+
 echo Copying userspace to floppya.img
 cd $project/build
+
 for filename in $project/userspace/bin/*; do
   ./tools/loadFile "$filename" "/bin/$(basename $filename)"
 done
+
 for filename in $project/userspace/var/*; do
   ./tools/loadFile "$filename" "/var/$(basename $filename)"
 done
-
-echo Cleaning up...
-cd $project/kernel
-make clean
-cd $project/build/tools
-make clean
-cd $project/bootloader
-rm bootload
 
 echo Done

@@ -17,7 +17,7 @@ int main() {
   interrupt(0x21, 3, "/var/messag\0", buffer, 0);
   interrupt(0x21, 0, buffer, 0, 0);
   
-  printString("File execute demo:\r\n\0");
-  interrupt(0x21, 4, "/bin/tstpr2\0", 0x2000, 0);
+  printString("Starting shell:\r\n\0");
+  interrupt(0x21, 4, "/bin/shell\0", 0x2000, 0);
   while(1);
 }

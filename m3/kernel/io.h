@@ -33,11 +33,8 @@
 
 
 #define GET_CHAR interrupt(BIOS_READ_CHAR, 0, 0, 0, 0)
-
-#define READ_SECTOR(data, sector)                                      \
-  interrupt(BIOS_DISK_INTERACT, MOVE_H(DISK_READ) + 1, data,           \
-            MOVE_H(div(sector, 36)) + mod(sector, 18) + 1,             \
-            MOVE_H(mod(div(sector, 18), 2)) + 0)
+            
+void printHex(int value);
 
 void printString(char * string);
 

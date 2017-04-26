@@ -10,6 +10,8 @@
 
 #define MAX_FSIZE 13312
 
+int listFilesInDir(char *, char *);
+int readFileFromPath(char *, char *);
 int readFile(char *, char *);
 
 #endif

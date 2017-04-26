@@ -6,6 +6,22 @@
 
 #include "io.h"
 
+
+void printHex(int value) {
+  if (value > 16) {
+    int newVal = div(value, 16);
+    printHex(newVal);
+    value -= newVal*16;
+  }
+  if (value > 10) {
+    PRINT_CHAR((value-10) + 'A');
+  }
+  else if (value < 10) {
+    PRINT_CHAR(value + '0');
+  }
+}
+
+
 void printString(char * string) {
   int ind = 0;
   char next = string[ind];
@@ -58,5 +74,15 @@ void readString(char * buffer) {
 }
 
 void readSector(char * buffer, int sector) {
-  READ_SECTOR(buffer, sector);
+  int relSector, head, track;
+  
+  relSector = mod(sector, 18) + 1;
+  
+  head = mod(div(sector, 18), 2);
+  
+  track = div(sector, 36);
+  
+  interrupt(BIOS_DISK_INTERACT, MOVE_H(DISK_READ) + 1, buffer,        \
+          MOVE_H(track) + relSector,             \
+          MOVE_H(head) + 0);
 }

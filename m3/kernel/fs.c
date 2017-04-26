@@ -5,15 +5,12 @@
  */
  
  #include "io.h"
+ #include "lib/math.h"
  
-/*
- * Reads a file from a path.
- * 
- * Returns the number of bytes read into buffer.
- * */
-int readFileFromPath(char * path, char * buffer) {
+ 
+int listFilesInDir(char * path, char * buffer) {
   char dir[512], nameSeg[7];
-  int res, segLen;
+  int res, segLen, i, found;
   
   /* read root directory */
   readSector(&dir, 2);
@@ -27,8 +24,44 @@ int readFileFromPath(char * path, char * buffer) {
     if (!res)
       return 0;
     path += segLen;
-    if (*path != '\0')
+    memcpy(dir, buffer, 512);
+  }
+  
+  found = 0;
+  for (i=0; i < 16; i++) {
+    if (dir[i*32] == 0x0)
+      continue;
+    memcpy(buffer, dir + i*32, 6);
+    buffer += 6;
+    found++;
+  }
+  return found;
+}
+ 
+/*
+ * Reads a file from a path.
+ * 
+ * Returns the number of bytes read into buffer.
+ * */
+int readFileFromPath(char * path, char * buffer) {
+  char dir[512], nameSeg[7];
+  int res, segLen, i;
+  
+  /* read root directory */
+  readSector(&dir, 2);
+
+  while (*path != '\0') {
+    memset(nameSeg, 0, 7);
+    path = strchr(path, '/') + 1;
+    segLen = (int)strchr(path, '/') - (int)path;
+    memcpy(nameSeg, path, segLen);
+    res = readFile(nameSeg, buffer, dir);
+    if (!res)
+      return 0;
+    path += segLen;
+    if (*path != '\0') {
       memcpy(dir, buffer, 512);
+    }
   }
   return res;
 }
@@ -39,7 +72,7 @@ int readFileFromPath(char * path, char * buffer) {
  * Returns the number of bytes read into buffer.
  **/
 int readFile(char * fname, char * buffer, char * dir) {
-  int i, j, k, equalFname;
+  int i, j, k, equalFname, sector;
   
   for (i = 0; i < 16; i++) {
     if (dir[i*32] == 0x0)

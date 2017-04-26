@@ -27,6 +27,10 @@ int executeProgram(char * name, int segment) {
   return 0;
 }
 
+void terminate() {
+  interrupt(0x21, 4, "/bin/shell\0", 0x2000, 0);
+}
+
 void handleInterrupt21(int ax, int bx, int cx, int dx) {
   int ret;
   switch (ax) {
@@ -47,11 +51,15 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
         println(msg);
       }
       break;
-    case 4: /* Execute program at filename *bx in segment cx */
+    case 4: 
+      /* Execute program at filename *bx in segment cx*/
       executeProgram((char *) bx, cx);
       break;
     case 5: /* Terminate current program. */
-      while(1); /* Hang for now */
+      terminate();
+      break;
+    case 6:
+      listFilesInDir((char *) bx, (char *) cx);
       break;
   }
 }
