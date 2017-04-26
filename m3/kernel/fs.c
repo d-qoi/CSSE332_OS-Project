@@ -7,15 +7,39 @@
  #include "io.h"
  
 /*
+ * Reads a file from a path.
+ * 
+ * Returns the number of bytes read into buffer.
+ * */
+int readFileFromPath(char * path, char * buffer) {
+  char dir[512], nameSeg[7];
+  int res, segLen;
+  
+  /* read root directory */
+  readSector(&dir, 2);
+
+  while (*path != '\0') {
+    memset(nameSeg, 0, 7);
+    path = strchr(path, '/') + 1;
+    segLen = (int)strchr(path, '/') - (int)path;
+    memcpy(nameSeg, path, segLen);
+    res = readFile(nameSeg, buffer, dir);
+    if (!res)
+      return 0;
+    path += segLen;
+    if (*path != '\0')
+      memcpy(dir, buffer, 512);
+  }
+  return res;
+}
+
+/*
  * Reads a file from the filesystem into a buffer.
  * 
- * Returns number of bytes read into buffer.
+ * Returns the number of bytes read into buffer.
  **/
-int readFile(char * fname, char * buffer) {
-  char dir[512];
+int readFile(char * fname, char * buffer, char * dir) {
   int i, j, k, equalFname;
-   
-  readSector(&dir, 2);
   
   for (i = 0; i < 16; i++) {
     if (dir[i*32] == 0x0)
@@ -37,9 +61,6 @@ int readFile(char * fname, char * buffer) {
 
     /* Check that the remaining characters in the dir entry are zero. */
     while (j < 6) {
-      if (j == 6){
-        println("j is 6");
-      }
       if (dir[i*32+j] != '\0'){
         equalFname = 0;
         break;
