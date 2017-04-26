@@ -32,7 +32,7 @@ int main() {
       memcpy(cmd+5, cmdBuff, 6);
       memcpy(args, cmdBuff+6);
       puts(args);
-      exec(cmd, args);
+      exec(cmd);
     }
   }
   

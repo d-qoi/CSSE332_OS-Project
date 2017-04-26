@@ -4,7 +4,6 @@
 ;lib.asm contains assembly functions that you can use in the shell
 
 	.global _interrupt
-  .global ___mkargv
 
 ;int interrupt (int number, int AX, int BX, int CX, int DX)
 _interrupt:

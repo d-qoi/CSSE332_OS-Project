@@ -7,9 +7,9 @@
 #include <stdio.h>
 #include <string.h>
 
-int main(char * argc, char * argv[]) {
+int main() {
   puts("From type: here is what I have!\n");
-  puts(argv[0]);
+  //puts(argv[0]);
   
   exit();
 }

@@ -7,7 +7,6 @@
 	.global _interrupt
 	.global _makeInterrupt21
 	.global _launchProgram
-  .global _launchProgramArgs
 	.extern _handleInterrupt21
 	.global _printhex
 
