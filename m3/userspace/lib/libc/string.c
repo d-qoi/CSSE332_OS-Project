@@ -29,6 +29,24 @@ char * strchr(char *s, char c) {
   return s;
 }
 
+int strncmp(char * a, char * b, int max) {
+  int count = 0;
+  while(count < max) {
+    count++;
+    if(*a == *b) {
+      if (*a == '\0') {
+	/* Done here */
+	return 0;
+      }
+      a++;
+      b++;
+    } else {
+      return 1;
+    }
+  }
+  return 0;
+}
+
 void * memcpy(void *dest, void *src, int count) {
   char *tmp = dest;
   char *s = src;
@@ -44,4 +62,12 @@ void * memset(void *s, int c, int count){
   while (count--)
     *xs++ = c;
   return s;
+}
+
+void removeLinefeed(char * s) {
+  int index = 0;
+  while(s[index] != '\r') {
+    index++;
+  }
+  s[index] = '\0';
 }
