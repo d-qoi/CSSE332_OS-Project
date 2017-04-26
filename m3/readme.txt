@@ -16,24 +16,27 @@ All other files produced in the process will be removed
 To test the image with qemu, run:
 qemu-system-i386 -fda build/floppya.img --boot order=a
 
-The program will print "Hello World" to the console.
-Then the program will request user input in the form
-of a line of text. Enter text and press enter. The
-line you entered will be printed on the next line.
+The program will first print out the contents of the
+message.txt file by using interrupt 0x21. Then, it
+will bring up a shell.
 
-Be aware, readString is protected. You cannot backspace
-beyond the starting point, and you cannot enter more
-than 76 characters. If you attempt to do the latter,
-your line will be cut off and the characters you
-have typed so far will be printed on the next line.
-If you attempt the former, the cursor will not move and
-the kernel will still be waiting for you to input
-a line, terminated by the enter key.
+The program will print "Starting Shell:" to the console,
+and then the shell prompt "# " will appear on the next
+line. Commands can be entered at this command prompt.
+Execution will begin upon hitting the enter key
 
-Next the program will read message.txt from sector 30
-and print the contents to the console on the next line.
+Commands Available:
+'type': This command will print the contents of the
+	desired file to the console. Be sure to
+	include the correct directory information
+	to access the file. For example:
+	'type /var/messag' will print the contents of
+	messag in the directory /var/
 
-Finally, the program calls interrupt 21 and in doing so
-is waiting for the user input another line. It will print
-the inputted line to the next console line as before, but
-there is no prompt for this input.
+'execute': This command will execute the desired
+	   program. Be sure to include the correct
+	   directory information to access the
+	   executable. For example:
+	   'execute /bin/tstpr2' will execute
+	   the program 'tstpr2' in the directory
+	   /bin/
