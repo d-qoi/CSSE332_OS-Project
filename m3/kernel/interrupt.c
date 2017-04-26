@@ -28,7 +28,20 @@ int executeProgram(char * name, int segment) {
 }
 
 void terminate() {
-  interrupt(0x21, 4, "/bin/shell\0", 0x2000, 0);
+  char exShell[11];
+  exShell[0] = '/';
+  exShell[1] = 'b';
+  exShell[2] = 'i';
+  exShell[3] = 'n';
+  exShell[4] = '/';
+  exShell[5] = 's';
+  exShell[6] = 'h';
+  exShell[7] = 'e';
+  exShell[8] = 'l';
+  exShell[9] = 'l';
+  exShell[10] = '\0';
+
+  interrupt(0x21, 4, exShell, 0x2000, 0);
 }
 
 void handleInterrupt21(int ax, int bx, int cx, int dx) {

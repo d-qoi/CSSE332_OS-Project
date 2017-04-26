@@ -10,7 +10,7 @@
 #define HARDCODE 1
 
 int main() {
-  char cmdBuff[256], pathBuff[512], fileBuff[13000], type[5], temp;
+  char cmdBuff[256], pathBuff[512], fileBuff[13000], type[5], execute[8], temp;
   int i, j, k, equals, ind = 0;
   for(k = 0; k < 256; k++) {
     cmdBuff[k] = '\0';
@@ -24,12 +24,25 @@ int main() {
   type[2] = 'p';
   type[3] = 'e';
   type[4] = '\0';
+  
+  execute[0] = 'e';
+  execute[1] = 'x';
+  execute[2] = 'e';
+  execute[3] = 'c';
+  execute[4] = 'u';
+  execute[5] = 't';
+  execute[6] = 'e';
+  execute[7] = '\0';
+      
   if (HARDCODE) {
     if (!strncmp(type, cmdBuff, 4)) {
       interrupt(0x21, 3, &cmdBuff[5], fileBuff, 0);
       interrupt(0x21, 0, fileBuff, 0, 0);
       exit();
-    } else {
+    } else if(!strncmp(execute, cmdBuff, 7)) {
+      interrupt(0x21, 4, cmdBuff, 0x2000, 0);
+      
+    }else {
       puts("Unknown command: ");
       puts(cmdBuff);
       puts("\n\r");
@@ -48,17 +61,17 @@ int main() {
       if (equals) {
 	char cmd[16], args[16];
 	memset(cmd, 0, 16);
-	memset(args, 0, 16);
-	strcat(cmd, "/bin/");
-	memcpy(cmd+5, cmdBuff, 6);
-	memcpy(args, cmdBuff+6);
-	puts(args);
-	exec(cmd);
+	    memset(args, 0, 16);
+	    strcat(cmd, "/bin/");
+	    memcpy(cmd+5, cmdBuff, 6);
+	    memcpy(args, cmdBuff+6);
+	    puts(args);
+	    exec(cmd);
       }
     }
     puts("Unknown command: ");
     puts(cmdBuff);
-    puts("\n\r");
-    exit();
+	puts("\n\r");
+	exit();
   }
 }
