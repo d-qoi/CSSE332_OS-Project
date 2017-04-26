@@ -20,6 +20,25 @@ char * strcat(char * a, char * b) {
   return tmp;
 }
 
+char * strncat(char * a, char * b, int max) {
+  char * tmp = a;
+  int count = 0;
+  while (*a != '\0') {
+    count++;
+    a++;
+    if (count >= max) return tmp;
+  }
+  while (*b != '\0') {
+    *a = *b;
+    a++;
+    b++;
+    count++;
+    if (count >= max) return tmp;
+  }
+  *a = '\0';
+  return tmp;
+}
+
 char * strchr(char *s, char c) {
   while (*s != c) {
     if (*s == '\0')
