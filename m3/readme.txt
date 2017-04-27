@@ -17,7 +17,7 @@ This tells the machine that this file is executable
 
 The compileOS.sh script will create a floppy disk image
 It will be named 'build/floppya.img'
-All other files produced in the process can be removed
+All files produced in the process can be removed
 with:
 ./build/cleanOS.sh
 
