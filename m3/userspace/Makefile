@@ -17,15 +17,15 @@ bin/shell: src/shell.o lib/libc/stdio.o lib/libc/string.o lib/lib_asm.o
 
 src/shell.o: src/shell.c
 	bcc $(CFLAGS) -o src/shell.o src/shell.c
-	
+
 lib/libc/stdio.o: lib/libc/stdio.c
 	bcc $(CFLAGS) -o lib/libc/stdio.o lib/libc/stdio.c
 
 lib/libc/string.o: lib/libc/string.c
 	bcc $(CFLAGS) -o lib/libc/string.o lib/libc/string.c
-	
+
 lib/lib_asm.o: lib/lib.asm
 	as86 lib/lib.asm -o lib/lib_asm.o
 
 clean: 
-	rm -rf lib/libc/*.o src/*.o bin/shell
+	rm -rf lib/libc/*.o src/*.o bin/shell bin/type
