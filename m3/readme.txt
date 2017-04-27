@@ -1,6 +1,12 @@
 Group 3-C
 David Mehl, Christian Balcom, and Alexander Hirschfeld
 
+Please read. The directory structure is not the same
+as expected. You must use sub-directories to find the
+files to read and execute. Examples are found at the
+end of this file
+
+
 To compile our operating system, run:
 ./build/compileOS.sh
 
@@ -11,7 +17,12 @@ This tells the machine that this file is executable
 
 The compileOS.sh script will create a floppy disk image
 It will be named 'build/floppya.img'
-All other files produced in the process will be removed
+All other files produced in the process can be removed
+with:
+./build/cleanOS.sh
+
+You might need to run:
+chmod +x build/cleanOS.sh
 
 To test the image with qemu, run:
 qemu-system-i386 -fda build/floppya.img --boot order=a
