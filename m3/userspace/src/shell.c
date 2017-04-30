@@ -15,6 +15,9 @@ int main() {
   for(k = 0; k < 256; k++) {
     cmdBuff[k] = '\0';
   }
+  for (k = 0; k < 13000; k++) {
+    fileBuff[k] = 0;
+  }
   puts("# ");
   gets(cmdBuff);
   removeLinefeed(cmdBuff);
