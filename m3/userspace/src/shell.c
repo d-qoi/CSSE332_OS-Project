@@ -12,9 +12,8 @@
 int main() {
   char cmdBuff[256], pathBuff[512], fileBuff[13000], type[5], execute[8], temp;
   int i, j, k, equals, ind = 0;
-  for(k = 0; k < 256; k++) {
-    cmdBuff[k] = '\0';
-  }
+  cmdBuff[0] = 0;
+  pathBuff[0] = 0;
   fileBuff[0] = 0;
   puts("# ");
   gets(cmdBuff);
