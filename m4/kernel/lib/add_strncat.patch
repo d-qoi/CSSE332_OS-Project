@@ -1,0 +1,55 @@
+From 5827ae56d4e4ada3d2a0530c609c3812ce5b936e Mon Sep 17 00:00:00 2001
+From: David Mehl <mehlda@rose-hulman.edu>
+Date: Wed, 26 Apr 2017 11:50:37 -0400
+Subject: [PATCH] added strncat function, still needs to be tested
+
+---
+ m3/kernel/lib/string.c | 19 +++++++++++++++++++
+ m3/kernel/lib/string.h |  1 +
+ 2 files changed, 20 insertions(+)
+
+diff --git a/m3/kernel/lib/string.c b/m3/kernel/lib/string.c
+index 60e5777..96f51e4 100644
+--- a/m3/kernel/lib/string.c
++++ b/m3/kernel/lib/string.c
+@@ -20,6 +20,25 @@ char * strcat(char * a, char * b) {
+   return tmp;
+ }
+ 
++char * strncat(char * a, char * b, int max) {
++  char * tmp = a;
++  int count = 0;
++  while (*a != '\0') {
++    count++;
++    a++;
++    if (count >= max) return tmp;
++  }
++  while (*b != '\0') {
++    *a = *b;
++    a++;
++    b++;
++    count++;
++    if (count >= max) return tmp;
++  }
++  *a = '\0';
++  return tmp;
++}
++
+ char * strchr(char *s, char c) {
+   while (*s != c) {
+     if (*s == '\0')
+diff --git a/m3/kernel/lib/string.h b/m3/kernel/lib/string.h
+index 8bc5ae6..2c5d8e2 100644
+--- a/m3/kernel/lib/string.h
++++ b/m3/kernel/lib/string.h
+@@ -8,6 +8,7 @@
+ #define _LIB_STRING
+ 
+ char * strcat(char *, char *);
++char * strncat(char * a, char * b, int max);
+ char * strchr(const char *, char);
+ void * memcpy(void *, const void *, int count);
+ void * memset(void *s, int c, int count);
+-- 
+2.7.4
+
