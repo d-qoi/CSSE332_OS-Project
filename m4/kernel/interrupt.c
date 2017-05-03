@@ -46,6 +46,7 @@ void terminate() {
 
 void handleInterrupt21(int ax, int bx, int cx, int dx) {
   int ret;
+  setKernelDataSegment();
   switch (ax) {
     case 0: /* Print *bx as a string */
       printString((char *) bx);
@@ -75,4 +76,5 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
       listFilesInDir((char *) bx, (char *) cx);
       break;
   }
+  restoreDataSegment();
 }
