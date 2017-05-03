@@ -13,6 +13,14 @@
 void csse_init() {
   int i;
   for (i = 0; i < CSSE_MAX_FOPEN; i++) {
+	csse_openFileTable[i].magica = 0x30;
+	csse_openFileTable[i].magicb = 0x31;
+	csse_openFileTable[i].magicc = 0x32;
+	csse_openFileTable[i].magicd = 0x33;
+	csse_openFileTable[i].magice = 0x34;
+	csse_openFileTable[i].magicf = 0x35;
+	csse_openFileTable[i].magicg = 0x36;
+	csse_openFileTable[i].magich = 0x37;
     csse_openFileTable[i].open = 0x00;
     csse_openFileTable[i].loadedSectorIndex = -1;
   }
@@ -42,16 +50,11 @@ int csse_fopen(int openFileIndex) {
     return -1; /* Too many files open. */
   }
   
-  
-  
   csse_newOpenFile = csse_openFileTable + csse_openFileIndex;
-  
   
   /* Save values to table */
   csse_newOpenFile->openFileIndex = openFileIndex;
   csse_newOpenFile->loadedSectorIndex = -1;
-
- 
   
   /* Split the relPath into dname and fname. */
   for (i = 0; i < 256; i++) {
@@ -60,25 +63,29 @@ int csse_fopen(int openFileIndex) {
     if (newOpenFile->relPath[i] == '\0')
       break;
   }
+
   memset(csse_newOpenFile->dname, 0, 256);
   memcpy(csse_newOpenFile->dname, newOpenFile->relPath, dnameLen);
-  memcpy(csse_newOpenFile->fname, newOpenFile->relPath + dnameLen, 256 - dnameLen);
+  memset(csse_newOpenFile->fname, 0, 7);
+  memcpy(csse_newOpenFile->fname, newOpenFile->relPath + dnameLen, 6);
 
   /* Load parent directory into loadedSectorBuffer temporarily. */
   
-  /*println(csse_newOpenFile->fname);*/
-  /*println("That was supposed to be fname");*/
+  println(csse_newOpenFile->dname);
+  println("That was supposed to be dname");
   
   csse_newOpenFile->dirSector = csse_readDir(
     mountTable[newOpenFile->mountIndex].drive,
     csse_newOpenFile->dname,
     csse_newOpenFile->loadedSectorBuffer);
+    
+  while(1);
   if (csse_newOpenFile->dirSector < 0){
     return -1; /* We had a problem reading the directory. */
   }
   
-  println(csse_newOpenFile->fname);
-  println("That was supposed to be fname 2");
+  println(csse_newOpenFile->dname);
+  println("That was supposed to be dname 2");
   
   i = csse_findDirEntry(csse_newOpenFile->fname, 
     csse_newOpenFile->loadedSectorBuffer);
@@ -86,7 +93,6 @@ int csse_fopen(int openFileIndex) {
   /* Read sector list from directory. */
   memcpy(csse_newOpenFile->sectors, csse_newOpenFile->loadedSectorBuffer + i*32 + 6, 26);
 
-  println("we wait here");
   while(1);
   
   /* We are succesfull! */
@@ -122,8 +128,7 @@ int csse_fread(int openFileIndex, char * buffer, int count) {
   if (csse_openFileIndex == CSSE_MAX_FOPEN)
     return -1; /* Did not find csse_openFile! */
   
-  
-  
+
   /* Iterate over all requested bytes. */
   while (count > 0) {
     /* Load next sector if necessary. */
