@@ -11,7 +11,8 @@
 
 int main() {
   char buffer[CSSE_MAX_FSIZE];  /* this is the maximum size of a file */
-  int f;
+  int f, res;
+  char * message = "This is a very interesting message!\n\r";
   println("Initializing Kernel.");
 
   makeInterrupt21();
@@ -21,16 +22,19 @@ int main() {
   println("Mounting /");
   mountfs(0, "/", FS_CSSE);
   println("Opening /var/messag");
-  f = fopen("/var/messag", 'r');
+  f = fopen("/var/messag", 'w');
   
-  println("Got here!");
-  while(1);
-    
-
-  /*println("Reading into buffer!");
+  println("Reading from file!");
   fread(f, buffer, 512);
-  println("Printing Buffer.");
-  /*printString(buffer);*/
+  printString(buffer);
+
+  println("Writing into file!");
+  fjump(f, 512);
+  fwrite(f, message, strlen(message)+1);
+  
+  println("Closing file!");
+  fclose(f);
+  println("File closed!");
   while(1);
   
   println("File read and print demo:");

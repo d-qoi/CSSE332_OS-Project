@@ -183,7 +183,24 @@ int fread(int openFileIndex, char * buffer, int count) {
  * 
  * */
 int fwrite(int openFileIndex, char * buffer, int count) {
-  //TODO: add fs specific code
+  int mountIndex;
+  
+  if (openFileIndex < 0 || openFileIndex > MAX_FOPEN){
+    return -1; /* Invalid openFileIndex. */
+  }
+  
+  if (openFileTable[openFileIndex].mode != 'w')
+    return -1; /* Must have write permissions. */
+  
+  mountIndex = openFileTable[openFileIndex].mountIndex;
+  if (mountTable[mountIndex].fsType == FS_CSSE)
+    return csse_fwrite(openFileIndex, buffer, count);
+    
+  return -1;
+}
+
+int fjump(int openFileIndex, int readWriteIndex) {
+  openFileTable[openFileIndex].readWriteIndex = readWriteIndex;
 }
 
 /*

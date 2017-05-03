@@ -14,7 +14,7 @@
 #define BIOS_DISK_INTERACT 0x13
 
 #define DISK_READ 2
-#define DISK_WRITE 1 /* To be determined later */
+#define DISK_WRITE 3
 
 #define PRINT_COMMAND 0xE
 
@@ -43,6 +43,7 @@ void println(char * string);
 void readString(char * buffer);
 
 void readSector(char * buffer, int sector);
-void readSector(char * buffer, int disk, int sector);
+void readSectorFrom(char * buffer, int disk, int sector);
+void writeSectorTo(char * buffer, int disk, int sector);
 
 #endif

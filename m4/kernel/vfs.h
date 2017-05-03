@@ -35,6 +35,7 @@ int mountfs(char drive, char * path, int fsType);
 int fopen(char * path, char mode);
 int fread(int openFileIndex, char * buffer, int count);
 int freaddir(char * path, char * buffer);
+int fjump(int openFileIndex, int readWriteIndex);
 int fwrite(int openFileIndex, char * buffer, int count);
 int fclose(int openFileIndex);
 
