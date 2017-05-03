@@ -1,5 +1,5 @@
 /*
-  Milestone 4 kernel/lib/string.c
+  Milestone 3 kernel/lib/string.c
   Group 3-C
   David Mehl, Christian Balcom, and Alexander Hirschfeld
  */
@@ -63,11 +63,4 @@ void * memset(void *s, int c, int count){
   while (count--)
     *xs++ = c;
   return s;
-}
-
-int strlen(char *s) {
-  int i = 0;
-  while (s[i] != '\0')
-    i++;
-  return i;
 }

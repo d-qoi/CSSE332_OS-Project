@@ -5,46 +5,40 @@
  */
 
 #include "interrupt.h"
-#include "fs.h"
+#include "fs/csse/csse.h"
+#include "vfs.h"
 #include "io.h"
 
 int main() {
-  char buffer[MAX_FSIZE];  /* this is the maximum size of a file */
-  char exShell[11];
-  char file[12];
-  
-  exShell[0] = '/';
-  exShell[1] = 'b';
-  exShell[2] = 'i';
-  exShell[3] = 'n';
-  exShell[4] = '/';
-  exShell[5] = 's';
-  exShell[6] = 'h';
-  exShell[7] = 'e';
-  exShell[8] = 'l';
-  exShell[9] = 'l';
-  exShell[10] = '\0';
+  char buffer[CSSE_MAX_FSIZE];  /* this is the maximum size of a file */
+  int f;
+  println("Initializing Kernel.");
 
-  file[0] = '/';
-  file[1] = 'v';
-  file[2] = 'a';
-  file[3] = 'r';
-  file[4] = '/';
-  file[5] = 'm';
-  file[6] = 'e';
-  file[7] = 's';
-  file[8] = 's';
-  file[9] = 'a';
-  file[10] = 'g';
-  file[11] = '\0';
-  
   makeInterrupt21();
   
-  printString("File read and print demo:\r\n\0");
-  interrupt(0x21, 3, file, buffer, 0);
+  vfs_init();
+  
+  println("Mounting /");
+  mountfs(0, "/", FS_CSSE);
+  println("Opening /var/messag");
+  f = fopen("/var/messag", 'r');
+  
+  println("Got here!");
+  while(1);
+    
+
+  /*println("Reading into buffer!");
+  fread(f, buffer, 512);
+  println("Printing Buffer.");
+  /*printString(buffer);*/
+  while(1);
+  
+  println("File read and print demo:");
+  interrupt(0x21, 3, "/var/messag", buffer, 0);
   interrupt(0x21, 0, buffer, 0, 0);
   
-  printString("Starting shell:\r\n\0");
-  interrupt(0x21, 4, exShell, 0x2000, 0);
-  while(1);
+  /*
+  println("Starting shell:");
+  interrupt(0x21, 4, "/bin/shell", 0x2000, 0); */
+  
 }

@@ -5,20 +5,19 @@
  */
  
 #include "io.h"
-#include "vfs.h"
-#include "fs/csse/csse.h"
+#include "fs.h"
 #include "interrupt.h"
 #include "lib/string.h"
 
 /*TODO: Move this elsewhere when we have a good spot for it.*/
-int executeProgram(char * path, int segment) {
-  char buffer[CSSE_MAX_FSIZE];
+int executeProgram(char * name, int segment) {
+  char buffer[MAX_FSIZE];
   int i, bytesRead;
   
   /* Read file and return if it failed. */
-  bytesRead = fread(path, buffer, CSSE_MAX_FSIZE);
+  bytesRead = readFileFromPath(name, buffer);
   if (!bytesRead) 
-    return -1;
+    return 1;
   
   for (i = 0; i < bytesRead; i++) {
     putInMemory(segment, i, buffer[i]);
@@ -29,12 +28,24 @@ int executeProgram(char * path, int segment) {
 }
 
 void terminate() {
-  interrupt(0x21, 4, "/bin/shell", 0x2000, 0);
+  char exShell[11];
+  exShell[0] = '/';
+  exShell[1] = 'b';
+  exShell[2] = 'i';
+  exShell[3] = 'n';
+  exShell[4] = '/';
+  exShell[5] = 's';
+  exShell[6] = 'h';
+  exShell[7] = 'e';
+  exShell[8] = 'l';
+  exShell[9] = 'l';
+  exShell[10] = '\0';
+
+  interrupt(0x21, 4, exShell, 0x2000, 0);
 }
 
 void handleInterrupt21(int ax, int bx, int cx, int dx) {
-  int f, bytesRead;
-      
+  int ret;
   switch (ax) {
     case 0: /* Print *bx as a string */
       printString((char *) bx);
@@ -46,11 +57,8 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
       readSector((char *) bx, cx);
       break;
     case 3: /* Read file at *bx into *cx */
-      f = fopen((char *) bx, 'r');
-      bytesRead = fread(f, (char *) cx, CSSE_MAX_FSIZE);
-      fclose(f);
-
-      if (bytesRead == 0) {
+      ret = readFileFromPath((char *) bx, (char *) cx);
+      if (!ret) {
         char * msg = "ERROR: readFile read 0 bytes from ";
         strcat(msg, bx);
         println(msg);
@@ -64,11 +72,7 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
       terminate();
       break;
     case 6:
-      freaddir((char *) bx, (char *) cx);
+      listFilesInDir((char *) bx, (char *) cx);
       break;
   }
-}
-
-void handleTimerInterrupt(int segment, int sp){
-  returnFromTimer(segment, sp);
 }

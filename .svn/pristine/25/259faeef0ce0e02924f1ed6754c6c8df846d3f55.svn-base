@@ -43,6 +43,5 @@ void println(char * string);
 void readString(char * buffer);
 
 void readSector(char * buffer, int sector);
-void readSector(char * buffer, int disk, int sector);
 
 #endif
