@@ -68,15 +68,17 @@ int csse_fopen(int openFileIndex) {
     mountTable[newOpenFile->mountIndex].drive,
     csse_newOpenFile->dname,
     csse_newOpenFile->loadedSectorBuffer,
-    newOpenFile->mode == 'w');
+    0);
   
   if (csse_newOpenFile->dirSector < 0){
     return -1; /* We had a problem reading the directory. */
   }
 
   
-  i = csse_findDirEntry(csse_newOpenFile->fname, 
-    csse_newOpenFile->loadedSectorBuffer);
+  i = csse_findDirEntry(
+    csse_newOpenFile->fname, 
+    csse_newOpenFile->loadedSectorBuffer, 
+    );
 
   /* Read sector list from directory. */
   memcpy(csse_newOpenFile->sectors, csse_newOpenFile->loadedSectorBuffer + i*32 + 6, 26);
