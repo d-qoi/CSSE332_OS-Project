@@ -26,7 +26,7 @@ void csse_init() {
  * returns: 0 if successful, -1 if not.
  * */
 int csse_fopen(int openFileIndex) {
-  int  i, csse_openFileIndex, dnameLen, entryIndex = 0;
+  int  i, csse_openFileIndex, dnameLen, fnameLen, entryIndex = 0;
   struct csse_openFile * csse_newOpenFile;
   struct openFile * newOpenFile;
   char dirBuffer[512];
@@ -57,11 +57,15 @@ int csse_fopen(int openFileIndex) {
     if (newOpenFile->relPath[i] == '\0')
       break;
   }
+  fnameLen = i - dnameLen;
+  println("Fnamelen");
+  printHex(fnameLen);
+  println("");
 
   memset(csse_newOpenFile->dname, 0, 256);
   memcpy(csse_newOpenFile->dname, newOpenFile->relPath, dnameLen);
   memset(csse_newOpenFile->fname, 0, 7);
-  memcpy(csse_newOpenFile->fname, newOpenFile->relPath + dnameLen, 6);
+  memcpy(csse_newOpenFile->fname, newOpenFile->relPath + dnameLen, fnameLen);
 
   /* Load parent directory into dirBuffer. */
   
@@ -88,11 +92,14 @@ int csse_fopen(int openFileIndex) {
     }
     if (i == 32)
       return -1;
+    println("Creating new file!");
+    entryIndex = i;
     memcpy(dirBuffer + i*32, csse_newOpenFile->fname, 6);
     writeSectorTo(
       dirBuffer, 
       mountTable[newOpenFile->mountIndex].drive, 
       csse_newOpenFile->dirSector);
+    memset(dirBuffer + i*32 + 6, 0, 26);
   }
   
 
@@ -191,15 +198,15 @@ int csse_fwrite(int openFileIndex, char * buffer, int count) {
 
   /* Iterate over all requested bytes. */
   while (count > 0) {
-    
     /* Load next sector if necessary. */
     if (div(currOpenFile->readWriteIndex, 512) != csse_currOpenFile->loadedSectorIndex){
-      
+      println("B");
       /* Write current sector. */
       if (csse_currOpenFile->sectorWrites && currOpenFile->mode == 'w')
         csse_openFileWriteCurrSector(csse_openFileIndex);
       /* Read next sector. */
       res = csse_openFileLoadNextSector(csse_openFileIndex);
+
       if (res < 0){
         println("Gen new sector!");
         
@@ -208,6 +215,7 @@ int csse_fwrite(int openFileIndex, char * buffer, int count) {
           mountTable[currOpenFile->mountIndex].drive, 
           csse_currOpenFile->dirSector, 
           csse_currOpenFile->fname);
+
         if (res < 0) {
           println("Cannot gen new sector!");
           break; /*Cannot assign new sector.*/
@@ -243,6 +251,9 @@ int csse_openFileLoadNextSector(int csse_openFileIndex) {
   
   rwIndex = currOpenFile->readWriteIndex;
   nextSector = csse_openFileTable[csse_openFileIndex].sectors[div(rwIndex, 512)];
+  println("Next sector:");
+  printHex(nextSector);
+  println("");
   if (nextSector == 0x00)
     return -1; /* No more sectors jumping on the bed! */
 
@@ -274,11 +285,16 @@ int csse_openFileAssignNewSector(int drive, int dirSector, char * fname) {
   /* Read dir */
   readSectorFrom(dirBuffer, drive, dirSector);
   
+  dirEntry = csse_findDirEntry(fname, dirBuffer);
+  if (dirEntry < 0)
+    println("Found it");
+  
   /* Check if there is a slot for a new sector in the directory. */
   for (sectorSlot = 0; sectorSlot < 26; sectorSlot++) {
     if (dirBuffer[dirEntry*32 + 6 + sectorSlot] == 0x00)
       break;
   }
+  printHex(dirBuffer[dirEntry*32 + 6 + 0]);
   if (sectorSlot == 26)
     return -1;
   
@@ -289,12 +305,17 @@ int csse_openFileAssignNewSector(int drive, int dirSector, char * fname) {
   }
   if (newSector == 512)
     return -1;
-
-  dirEntry = csse_findDirEntry(fname, dirBuffer);
   
   /* Reserve sector. */
   mapBuffer[newSector] = 0xFF;
   dirBuffer[dirEntry*32 + 6 + sectorSlot] = newSector;
+  println("Stuff here:");
+  printHex(dirEntry);
+  println("");
+  printHex(sectorSlot);
+  println("");
+  printHex(newSector);
+  println("");
   
   /* Save map. */
   writeSectorTo(mapBuffer, drive, 1);
@@ -320,7 +341,9 @@ int csse_openFileWriteCurrSector(int csse_openFileIndex) {
   
   currOpenFile = openFileTable + csse_openFileTable[csse_openFileIndex].openFileIndex;
   currSector = csse_openFileTable[csse_openFileIndex].sectors[csse_openFileTable[csse_openFileIndex].loadedSectorIndex];
-  
+  printHex(currSector);
+  println();
+  println(csse_openFileTable[csse_openFileIndex].loadedSectorBuffer);
   rwIndex = currOpenFile->readWriteIndex;
 
   writeSectorTo(csse_openFileTable[csse_openFileIndex].loadedSectorBuffer,
