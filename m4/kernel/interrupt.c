@@ -94,11 +94,17 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
     break;
     case 4: 
       /* Execute program at filename *bx in segment cx*/
+      len = strlen((char *) bx);
       setKernelDataSegment();
-      executeProgram((char *) bx, cx);
+      
+      copyLenOut(len, (char *) bx, buffer);
+      
+      executeProgram(buffer, cx);
+      
       restoreDataSegment();
       break;
     case 5: /* Terminate current program. */
+      setKernelDataSegment();
       terminate();
       break;
     case 6: /* Write a sector */
@@ -109,7 +115,6 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
       setKernelDataSegment();
       copyLenOut(len, (char *) bx, buffer);
       buffer[len] = 0;
-      println(buffer);
       fdel(buffer);
       
       restoreDataSegment();
@@ -124,9 +129,9 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
       restoreDataSegment();
       len = strlen((char *) cx);
       setKernelDataSegment();
-      
       copyLenOut(len, (char *) cx, buffer);
-      fwrite(f, buffer, len);
+      buffer[len] = 0;
+      fwrite(f, buffer, len+1);
       fclose(f);
       
       restoreDataSegment();
@@ -136,14 +141,11 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
       setKernelDataSegment();
       copyLenOut(len, (char *) bx, buffer);
       buffer[len] = 0;
-      println(buffer);
       
       freaddir(buffer, buffer);
       
-      println(buffer+256);
-
       len = strlen((char *) buffer);
-      copyLenIn(len, buffer, cx);
+      copyLenIn(len, buffer, 512);
       
       restoreDataSegment();
       break;

@@ -46,6 +46,6 @@ int main() {
   */
   
   println("Starting shell:");
-  interrupt(0x21, 4, "/bin/shell", 0x2000, 0);
+  executeProgram("/bin/shell", 0x2000);
   
 }
