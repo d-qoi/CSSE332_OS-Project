@@ -48,8 +48,8 @@ int main() {
 	exit();
       }
       
-      fread(&cmdBuff[6], fileBuff);
-      c = 6;
+      fread(&cmdBuff[5], fileBuff);
+      c = 5;
       while(1) {
 	if(cmdBuff[c] == ' ')
 	  break;
