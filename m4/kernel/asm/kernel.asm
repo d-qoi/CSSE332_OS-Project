@@ -4,6 +4,7 @@
 ;kernel.asm contains assembly functions that you can use in your kernel
 
 	.global _putInMemory
+  .global _getFromMemory
 	.global _interrupt
 	.global _makeInterrupt21
 	.global _launchProgram
@@ -28,6 +29,20 @@ _putInMemory:
 	mov [si],cl
 	pop ds
 	pop bp
+	ret
+
+;void getFromMemory (int segment, int address)
+_getFromMemory:
+	push bp
+	mov bp,sp
+	push ds
+	mov ax,[bp+4]
+	mov si,[bp+6]
+	mov ds,ax
+	mov ax, [si]
+	pop ds
+	pop bp
+  
 	ret
 
 ;int interrupt (int number, int AX, int BX, int CX, int DX)

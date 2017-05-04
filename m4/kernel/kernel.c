@@ -21,7 +21,7 @@ int main() {
   
   println("Mounting /");
   mountfs(0, "/", FS_CSSE);
-  println("Opening /var/messag");
+  /*println("Opening /var/messag");
   f1 = fopen("/var/messag", 'r');
   
   println("Opening /var/test");
@@ -43,10 +43,9 @@ int main() {
   println("File read and print demo:");
   interrupt(0x21, 3, "/var/messag", buffer, 0);
   interrupt(0x21, 0, buffer, 0, 0);
+  */
   
-  
-  /*
   println("Starting shell:");
-  interrupt(0x21, 4, "/bin/shell", 0x2000, 0); */
+  interrupt(0x21, 4, "/bin/shell", 0x2000, 0);
   
 }

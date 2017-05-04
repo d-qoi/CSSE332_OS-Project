@@ -13,10 +13,13 @@
 /*TODO: Move this elsewhere when we have a good spot for it.*/
 int executeProgram(char * path, int segment) {
   char buffer[CSSE_MAX_FSIZE];
-  int i, bytesRead;
+  int i, f, bytesRead;
+  
   
   /* Read file and return if it failed. */
-  bytesRead = fread(path, buffer, CSSE_MAX_FSIZE);
+  f = fopen(path, 'r');
+  bytesRead = fread(f, buffer, CSSE_MAX_FSIZE);
+  fclose(f);
   if (!bytesRead) 
     return -1;
   
@@ -32,9 +35,28 @@ void terminate() {
   interrupt(0x21, 4, "/bin/shell", 0x2000, 0);
 }
 
+void copyLenOut(int len, char * src, char * tgt) {
+  while (len > 0) {
+    *tgt = getFromMemory(0x2000, src);
+    src++;
+    tgt++;
+    len--;
+  }
+}
+
+void copyLenIn(int len, char * src, char * tgt) {
+  while (len > 0) {
+    *src = putInMemory(0x2000, tgt);
+    src++;
+    tgt++;
+    len--;
+  }
+}
+
 void handleInterrupt21(int ax, int bx, int cx, int dx) {
-  int f, bytesRead;
-      
+  int f, bytesRead, len;
+  char buffer[512];
+
   switch (ax) {
     case 0: /* Print *bx as a string */
       printString((char *) bx);
@@ -46,16 +68,19 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
       readSector((char *) bx, cx);
       break;
     case 3: /* Read file at *bx into *cx */
-      f = fopen((char *) bx, 'r');
-      bytesRead = fread(f, (char *) cx, CSSE_MAX_FSIZE);
+      len = strlen((char *) bx);
+      setKernelDataSegment();
+      copyLenOut(len, (char *) bx, buffer);
+      
+      f = fopen(buffer, 'r');
+      bytesRead = fread(f, buffer, CSSE_MAX_FSIZE);
       fclose(f);
-
-      if (bytesRead == 0) {
-        char * msg = "ERROR: readFile read 0 bytes from ";
-        strcat(msg, bx);
-        println(msg);
-      }
-      break;
+      println(buffer);
+      len = strlen((char *) buffer);
+      copyLenIn(len, buffer, bx);
+      
+      restoreDataSegment();
+    break;
     case 4: 
       /* Execute program at filename *bx in segment cx*/
       executeProgram((char *) bx, cx);
@@ -64,7 +89,7 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
       terminate();
       break;
     case 6: /* Write a sector */
-      writeSector((char *)bx, cx);
+      writeSector((char *) bx, cx);
       break;
     case 7: /* Delete a file */
       break;
