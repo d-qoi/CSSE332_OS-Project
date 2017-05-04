@@ -35,7 +35,8 @@ int main() {
       puts(fileBuff);
       exit();
     } else if(!strncmp("execute", cmdBuff, 7)) {
-      exec(cmdBuff);
+      exec(&cmdBuff[8]);
+      exit();
       /*interrupt(0x21, 4, cmdBuff, 0x2000, 0);*/
       
     } else if (!strncmp("delete", cmdBuff, 6)) {
