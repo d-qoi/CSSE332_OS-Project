@@ -25,7 +25,7 @@ int main() {
       
   if (HARDCODE) {
     if (!strncmp("type", cmdBuff, 4)) {
-      if (cmdBuff[5] == '\0') {
+      if (cmdBuff[5] != '/' || cmdBuff[6] < 'A') {
 	puts("Invalid arguments to type command\n");
 	exit();
       }
@@ -37,13 +37,13 @@ int main() {
       /*interrupt(0x21, 4, cmdBuff, 0x2000, 0);*/
       
     } else if (!strncmp("delete", cmdBuff, 6)) {
-      if (cmdBuff[8] == '\0') {
+      if (cmdBuff[7] != '/' || cmdBuff[8] < 'A') {
 	puts("Invalid arguments to delete command\n");
 	exit();
       }
       fdel(&cmdBuff[8]);
     } else if (!strncmp("copy", cmdBuff, 4)) {
-      if(cmdBuff[6] == '\n') {
+      if(cmdBuff[5] != '/' || cmdBuff[6] < 'A') {
 	puts("Invalid inputs to copy command\n");
 	exit();
       }
@@ -60,27 +60,27 @@ int main() {
 	c++;
       }
       c++;
-      if(cmdBuff[c] == '\0') {
+      if(cmdBuff[c] != '/' || cmdBuff[c + 1] < 'A') {
 	puts("Invalid output file\n");
 	exit();
       }
       fwrite(&cmdBuff[c], fileBuff);
       
     } else if (!strncmp("dir", cmdBuff, 3)) {
-      if (cmdBuff[4] == '\0') {
+      if (cmdBuff[4] != '/') {
 	puts("Invalid arguments to dir command\n");
 	exit();
       }
       getDirList(&cmdBuff[4], fileBuff);
     } else if (!strncmp("create", cmdBuff, 6)) {
-      if (cmdBuff[8] == '\0') {
+      if (cmdBuff[7] != '/' || cmdBuff[8] < 'A') {
 	puts("Invalid arguments to create command\n");
 	exit();
       }
       while(1) {
 	gets(temp);
 	len = strlen(temp);
-	if (temp[0] == 'e') {
+	if (len == 2) {
 	  fwrite(&cmdBuff[7], fileBuff);
 	  exit();
 	} else {
