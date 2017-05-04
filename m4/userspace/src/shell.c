@@ -27,7 +27,9 @@ int main() {
     } else if(!strncmp("execute", cmdBuff, 7)) {
       interrupt(0x21, 4, cmdBuff, 0x2000, 0);
       
-    }else {
+    } else if(!strncmp("dir", cmdBuff, 3)) {
+      getDirList("/", cmdBuff);
+    } else {
       puts("Unknown command: ");
       puts(cmdBuff);
       puts("\n\r");

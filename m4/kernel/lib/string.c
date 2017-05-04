@@ -71,3 +71,12 @@ int strlen(char *s) {
     i++;
   return i;
 }
+
+int strcmp(char * a, char * b) {
+  while(*a == *b) {
+    if (*a == '\0')
+      return 1;
+    a++; b++; 
+  }
+  return 0;
+}
