@@ -51,15 +51,8 @@ int main() {
 	puts("Invalid inputs to copy command\n");
 	exit();
       }
-      c = 3;
-      while(1) {
-	if(cmdBuff[c] == ' ') {
-	  cmdBuff[c] = '\0';
-	  break;
-	}
-	c++;
-      }
-      fread(&cmdBuff[5], fileBuff);
+
+
       c = 5;
       while(1) {
 	if(cmdBuff[c] == ' ') {
@@ -73,6 +66,8 @@ int main() {
 	c++;
       }
       c++;
+      fread(&cmdBuff[5], fileBuff);
+      
       if(cmdBuff[c] != '/' || cmdBuff[c + 1] < 'A') {
 	puts("Invalid output file\n");
 	exit();
