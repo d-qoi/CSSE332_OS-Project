@@ -73,14 +73,14 @@ int main() {
       }
       getDirList(&cmdBuff[4], fileBuff);
     } else if (!strncmp("create", cmdBuff, 6)) {
-      if (cmdBuff[7] == '\0') {
+      if (cmdBuff[8] == '\0') {
 	puts("Invalid arguments to create command\n");
 	exit();
       }
       while(1) {
 	gets(temp);
 	len = strlen(temp);
-	if (len == 0) {
+	if (temp[0] == 'e') {
 	  fwrite(&cmdBuff[7], fileBuff);
 	  exit();
 	} else {

@@ -21,15 +21,15 @@ int main() {
   
   println("Mounting /");
   mountfs(0, "/", FS_CSSE);
+  
   /*println("Opening /var/messag");
-  f1 = fopen("/var/messag", 'r');
+  
   
   println("Opening /var/test");
   f2 = fopen("/var/test", 'w');
 
   println("Reading from file!");
-  fread(f1, buffer, 512);
-  printString(buffer);
+
 
   println("Writing into file!");
   fwrite(f2, buffer, 512);

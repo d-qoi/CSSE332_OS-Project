@@ -16,6 +16,9 @@
 	.global _initializeProgram
 	.global _setKernelDataSegment
 	.global _restoreDataSegment
+  .global _getDataSegment
+  .global _getCodeSegment
+  .global _getStackSegment
 
 ;void putInMemory (int segment, int address, char character)
 _putInMemory:
@@ -278,21 +281,56 @@ _initializeProgram:
 _setKernelDataSegment:
         pop bx
         push ds
+        push es
         push bx
         mov ax,#0x1000
         mov ds,ax
+        mov es,ax
         ret
 
 ;void restoreDataSegment()
 ;restores the data segment
 _restoreDataSegment:
         pop bx
+        pop es
         pop ds
         push bx
         ret
 
+_getDataSegment:
+        mov ax, ds
+        ret
 
+_getCodeSegment:
+        mov ax, cs
+        ret
+        
+_getStackSegment:
+        mov ax, ss
+        ret
 
+_getEsegment:
+        mov ax, es
+        ret
+        
+; int number, int* buffer
+;_getStackFrame:
+;        push bp ; push bp
+;        mov bp, sp ; set bp 
+;        mov ax, [bp + 4] ;get 
+;        mov bx, [bp + 6]
+;        mov cx, ax
+;        add cx, bp
+;gsf1:   mov dx, [cx]
+;        mov [bx], dx
+;        sub cx, #0x2
+;        sub ax, #0x2
+;        cmp ax, #0x0
+;        je gsf1 
+;        
+;        
+;        pop bp
+;        ret
 
 ;printhex is used for debugging only
 ;it prints out the contents of ax in hexadecimal

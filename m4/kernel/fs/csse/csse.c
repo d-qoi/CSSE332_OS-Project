@@ -92,7 +92,7 @@ int csse_fopen(int openFileIndex) {
     entryIndex = i;
     memcpy(dirBuffer + i*32, csse_newOpenFile->fname, 6);
     writeSectorTo(
-      dirBuffer, 
+      dirBuffer,
       mountTable[newOpenFile->mountIndex].drive, 
       csse_newOpenFile->dirSector);
     memset(dirBuffer + i*32 + 6, 0, 26);
@@ -395,8 +395,9 @@ int csse_readDir(int drive, char * dname, char * dirBuffer, int create) {
 
     entryIndex = csse_findDirEntry(nameSeg, dirBuffer);
     if (entryIndex < 0) {
-      if (!create)
+      if (!create){
         return -1;
+      }
       else {
         int i;
         for (i = 0; i < 32; i++){

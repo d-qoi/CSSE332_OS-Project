@@ -19,7 +19,7 @@ int executeProgram(char * path, int segment) {
   /* Read file and return if it failed. */
   f = fopen(path, 'r');
   bytesRead = fread(f, buffer, CSSE_MAX_FSIZE);
-  fclose(f);
+  /*fclose(f);*/
   if (!bytesRead) 
     return -1;
   
@@ -46,7 +46,7 @@ void copyLenOut(int len, char * src, char * tgt) {
 
 void copyLenIn(int len, char * src, char * tgt) {
   while (len > 0) {
-    *src = putInMemory(0x2000, tgt);
+    putInMemory(0x2000, tgt, *src);
     src++;
     tgt++;
     len--;
@@ -71,29 +71,61 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
       len = strlen((char *) bx);
       setKernelDataSegment();
       copyLenOut(len, (char *) bx, buffer);
-      
+      buffer[len] = 0;
       f = fopen(buffer, 'r');
+      println(buffer);
+      if (f < 0){
+        println("Problem");
+        restoreDataSegment();
+        break;
+      }
       bytesRead = fread(f, buffer, CSSE_MAX_FSIZE);
       fclose(f);
-      println(buffer);
+      
+      if (bytesRead < 0) {
+        println("Error: Could not read file.");
+        restoreDataSegment();
+        break;
+      }
+      
       len = strlen((char *) buffer);
-      copyLenIn(len, buffer, bx);
+      copyLenIn(len, buffer, cx);
       
       restoreDataSegment();
     break;
     case 4: 
       /* Execute program at filename *bx in segment cx*/
+      setKernelDataSegment();
       executeProgram((char *) bx, cx);
+      restoreDataSegment();
       break;
     case 5: /* Terminate current program. */
       terminate();
       break;
     case 6: /* Write a sector */
-      writeSector((char *) bx, cx);
+      writeSector((char *) bx, (char *) cx);
       break;
     case 7: /* Delete a file */
       break;
     case 8: /* Write a file */
+      len = strlen((char *) bx);
+      setKernelDataSegment();
+      println("Writing stuff");
+      copyLenOut(len, (char *) bx, buffer);
+      buffer[len] = 0;
+      
+      f = fopen(buffer, 'w');
+      
+      restoreDataSegment();
+      len = strlen((char *) cx);
+      setKernelDataSegment();
+      
+      copyLenOut(len, (char *) cx, buffer);
+      fwrite(f, buffer, len);
+      println(buffer);
+      fclose();
+      
+      restoreDataSegment();
       break;
     case 9:
       freaddir((char *) bx, (char *) cx);
