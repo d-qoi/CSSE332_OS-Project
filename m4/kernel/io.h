@@ -14,7 +14,7 @@
 #define BIOS_DISK_INTERACT 0x13
 
 #define DISK_READ 2
-#define DISK_WRITE 1 /* To be determined later */
+#define DISK_WRITE 3 /* To be determined later */
 
 #define PRINT_COMMAND 0xE
 
