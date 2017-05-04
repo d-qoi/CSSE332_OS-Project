@@ -17,7 +17,9 @@ int executeProgram(char *, int);
 void handleInterrupt21(int, int, int, int);
 
 struct process* allocateProcess();
+struct process* reallocateProcess(int segment);
 struct process* freeProcess(int segment);
+struct process* getProcessByName(char * name);
 struct process* getCurrentProcess();
 
 struct process {
@@ -26,7 +28,7 @@ struct process {
 	char name[PROCESSNAMELIMIT];
 };
 
-struct processTable process[PROCESSLIMIT];
+struct process processTable[PROCESSLIMIT];
 
 #endif
 

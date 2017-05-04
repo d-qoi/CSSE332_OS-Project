@@ -8,12 +8,16 @@
 #include "fs/csse/csse.h"
 #include "vfs.h"
 #include "io.h"
+#include "lib/string.h"
 
 int main() {
   char buffer[CSSE_MAX_FSIZE];  /* this is the maximum size of a file */
   int f, res;
   char * message = "This is a very interesting message!\n\r";
   println("Initializing Kernel.");
+
+  /* initializing process table */
+  memset(processTable, 0, sizeof(process)*PROCESSLIMIT);
 
   makeInterrupt21();
   

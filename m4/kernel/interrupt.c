@@ -14,7 +14,24 @@
 int executeProgram(char * path, int segment) {
   char buffer[CSSE_MAX_FSIZE];
   int i, bytesRead;
-  
+
+  struct process* currentProcess;
+
+  if (segment == 0) {
+    currentProcess = allocateProcess();
+    if (currentProcess == 0) { /* in the case that we are not able to allcate another process */
+      return -1;
+    }
+  } else {
+    currentProcess = reallocateProcess(segment);
+  }
+
+  segment = currentProcess->segment;
+
+  /* this may need to be changed later to handle multiple processes */
+  currentProcess->running = 1;
+  currentProcess->name = "Hello World";
+
   /* Read file and return if it failed. */
   bytesRead = fread(path, buffer, CSSE_MAX_FSIZE);
   if (!bytesRead) 
@@ -26,6 +43,51 @@ int executeProgram(char * path, int segment) {
   
   launchProgram(segment);
   return 0;
+}
+
+struct process* allocateProcess() {
+  int i = 0;
+  for (i = 0; i<PROCESSLIMIT; i++) {
+    if (processTable[i].segment == 0) {
+      processTable[i].segment = i+2;
+      return processTable[i];
+    }
+  }
+  return 0;
+}
+
+struct process* reallocateProcess(int segment) {
+  if ((segment - 2 < 0) || (segment - 2 > PROCESSLIMIT - 1))
+    return processTable[segment - 2];
+  return allocateProcess();
+}
+
+struct process* freeProcess(int segment) {
+  if ((segment - 2 < 0) || (segment - 2 > PROCESSLIMIT - 1)) {
+    processTable[segment -2].segment = 0;
+    return processTable[segment-2];
+  }
+  return 0;
+}
+
+struct process* getProcessByName(char * name) {
+  int i; 
+  for (i = 0; i<PROCESSLIMIT; i++) 
+    if (strcmp(name, processTable[i].name))
+      return processTable[i];
+  return 0;
+}
+
+struct process* getCurrentProcess() {
+  int i;
+  for (i = 0; i<PROCESSLIMIT; i++)
+    if (processTable[i].running)
+      return processTable[i];
+
+  /* if it is unable to find a running process */
+  processTable[0].running = 1;
+  return processTable[0];
+
 }
 
 void terminate() {
