@@ -115,7 +115,7 @@ void writeSector(char * buffer, int sector) {
           MOVE_H(head) + 0);
 }
 
-void writeSectorTo(char * buffer, int drive, int sector) {
+void writeSectorFrom(char * buffer, int drive, int sector) {
   int relSector, head, track;
   
   relSector = mod(sector, 18) + 1;

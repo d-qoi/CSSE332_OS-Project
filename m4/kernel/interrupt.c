@@ -63,7 +63,14 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
     case 5: /* Terminate current program. */
       terminate();
       break;
-    case 6:
+    case 6: /* Write a sector */
+      writeSector((char *)bx, cx);
+      break;
+    case 7: /* Delete a file */
+      break;
+    case 8: /* Write a file */
+      break;
+    case 9:
       freaddir((char *) bx, (char *) cx);
       break;
   }
