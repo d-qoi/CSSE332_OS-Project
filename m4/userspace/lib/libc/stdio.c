@@ -30,7 +30,6 @@ void fread(char * fname, char * buf) {
 }
 
 void fwrite(char * fname, char * buf) {
-  /* TODO verify this is correct usage */
   interrupt(0x21, 8, fname, buf, 0);
 }
 

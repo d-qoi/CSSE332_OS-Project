@@ -203,6 +203,19 @@ int fjump(int openFileIndex, int readWriteIndex) {
   openFileTable[openFileIndex].readWriteIndex = readWriteIndex;
 }
 
+int fdel(char * path) {
+  int res, mountIndex;
+  char relPath[256];
+
+  mountIndex = findMountAndRelPath(path, relPath);
+  if (mountIndex < 0)
+    return -1; /* Could not find mount. */
+  
+  if (mountTable[mountIndex].fsType == FS_CSSE){
+    csse_fdel(mountTable[mountIndex].drive, relPath);
+  }
+}
+
 /*
  * Closes a specific file index.
  * 

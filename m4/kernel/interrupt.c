@@ -19,7 +19,7 @@ int executeProgram(char * path, int segment) {
   /* Read file and return if it failed. */
   f = fopen(path, 'r');
   bytesRead = fread(f, buffer, CSSE_MAX_FSIZE);
-  /*fclose(f);*/
+  fclose(f);
   if (!bytesRead) 
     return -1;
   
@@ -72,10 +72,10 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
       setKernelDataSegment();
       copyLenOut(len, (char *) bx, buffer);
       buffer[len] = 0;
+
       f = fopen(buffer, 'r');
-      println(buffer);
       if (f < 0){
-        println("Problem");
+        println("Could not open file.");
         restoreDataSegment();
         break;
       }
@@ -83,7 +83,6 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
       fclose(f);
       
       if (bytesRead < 0) {
-        println("Error: Could not read file.");
         restoreDataSegment();
         break;
       }
@@ -106,14 +105,20 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
       writeSector((char *) bx, (char *) cx);
       break;
     case 7: /* Delete a file */
+      len = strlen((char *) bx);
+      setKernelDataSegment();
+      copyLenOut(len, (char *) bx, buffer);
+      buffer[len] = 0;
+      println(buffer);
+      fdel(buffer);
+      
+      restoreDataSegment();
       break;
     case 8: /* Write a file */
       len = strlen((char *) bx);
       setKernelDataSegment();
-      println("Writing stuff");
       copyLenOut(len, (char *) bx, buffer);
       buffer[len] = 0;
-      
       f = fopen(buffer, 'w');
       
       restoreDataSegment();
@@ -122,13 +127,25 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
       
       copyLenOut(len, (char *) cx, buffer);
       fwrite(f, buffer, len);
-      println(buffer);
-      fclose();
+      fclose(f);
       
       restoreDataSegment();
       break;
     case 9:
-      freaddir((char *) bx, (char *) cx);
+      len = strlen((char *) bx);
+      setKernelDataSegment();
+      copyLenOut(len, (char *) bx, buffer);
+      buffer[len] = 0;
+      println(buffer);
+      
+      freaddir(buffer, buffer);
+      
+      println(buffer+256);
+
+      len = strlen((char *) buffer);
+      copyLenIn(len, buffer, cx);
+      
+      restoreDataSegment();
       break;
   }
 }

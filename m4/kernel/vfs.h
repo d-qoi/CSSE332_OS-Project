@@ -37,6 +37,7 @@ int fread(int openFileIndex, char * buffer, int count);
 int freaddir(char * path, char * buffer);
 int fjump(int openFileIndex, int readWriteIndex);
 int fwrite(int openFileIndex, char * buffer, int count);
+int fdel(char * path);
 int fclose(int openFileIndex);
 
 

@@ -271,6 +271,8 @@ int csse_openFileAssignNewSector(int drive, int dirSector, char * fname) {
   char mapBuffer[512], dirBuffer[512];
   struct openFile * currOpenFile;
   int dirEntry, sectorSlot, newSector;
+  
+  /*println("Generate sector!");*/
     
   /* Read map. */
   readSectorFrom(mapBuffer, drive, 1);
@@ -322,7 +324,7 @@ int csse_openFileWriteCurrSector(int csse_openFileIndex) {
   int rwIndex, currSector;
   struct openFile * currOpenFile;
   
-  println("Writing a sector!");
+  /*println("Writing a sector!");*/
   
   currOpenFile = openFileTable + csse_openFileTable[csse_openFileIndex].openFileIndex;
   currSector = csse_openFileTable[csse_openFileIndex].sectors[csse_openFileTable[csse_openFileIndex].loadedSectorIndex];
@@ -491,4 +493,62 @@ void csse_fclose(int openFileIndex) {
     csse_openFileWriteCurrSector(csse_openFileIndex);
   
   csse_currOpenFile->open = 0x00;
+}
+
+
+int csse_fdel(int drive, char * path) {
+  int  i, dnameLen, fnameLen, dirSector, entryIndex;
+  char dirBuffer[512], mapBuffer[512], fname[256], dname[256];
+  
+  /* Read map. */
+  readSectorFrom(mapBuffer, drive, 1);
+  
+  /* Split the relPath into dname and fname. */
+  for (i = 0; i < 256; i++) {
+    if (path[i] == '/')
+      dnameLen = i + 1;
+    if (path[i] == '\0')
+      break;
+  }
+  fnameLen = i - dnameLen;
+
+  memset(dname, 0, 256);
+  memcpy(dname, path, dnameLen);
+  memset(fname, 0, 7);
+  memcpy(fname, path + dnameLen, fnameLen);
+
+  /* Load parent directory into dirBuffer. */
+  dirSector = csse_readDir(
+    drive,
+    dname,
+    dirBuffer,
+    0);
+  if (dirSector < 0){
+    return -1; /* We had a problem reading the directory. */
+  }
+
+  entryIndex = csse_findDirEntry(
+    fname, 
+    dirBuffer);
+
+  if (entryIndex < 0){
+    return -1; /* We had a problem reading the directory. */
+  }
+
+  for (i = 0; i < 26; i++){
+    int sector = dirBuffer[entryIndex*32 + 6 + i];
+    if (sector == 0)
+      break;
+    mapBuffer[sector] = 0x00;
+  }
+  
+  dirBuffer[entryIndex*32] = 0;
+  
+  /* Save map. */
+  writeSectorTo(mapBuffer, drive, 1);
+  
+  /* Save dir */
+  writeSectorTo(dirBuffer, drive, dirSector);
+  
+  return 0;
 }
