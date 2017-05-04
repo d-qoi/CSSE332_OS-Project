@@ -24,3 +24,16 @@ void exec(char * fname) {
 void exit() {
   interrupt(0x21, 5, 0, 0, 0);
 }
+
+void fread(char * fname, char * buf) {
+  interrupt(0x21, 3, fname, buf, 0);
+}
+
+void fwrite(char * fname, char * buf) {
+  /* TODO verify this is correct usage */
+  interrupt(0x21, 6, fname, buf, 0);
+}
+
+void fdel(char * fname) {
+  interrupt(0x21, 7, fname, 0, 0);
+}

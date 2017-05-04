@@ -12,5 +12,7 @@ void gets(char * str);
 void getDirList(char * fname, char * buff);
 void exec(char * fname, char * args);
 void exit();
-
+void fread(char * fname, char * buf);
+void fwrite(char * fname, char * buf);
+void fdel(char * fname);
 #endif
