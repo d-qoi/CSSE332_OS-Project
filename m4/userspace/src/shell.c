@@ -45,7 +45,7 @@ int main() {
       }
       len = strlen(&cmdBuff[7]);
       cmdBuff[7 + len] = '\0';
-      fdel(&cmdBuff[8]);
+      fdel(&cmdBuff[7]);
     } else if (!strncmp("copy", cmdBuff, 4)) {
       if(cmdBuff[5] != '/' || cmdBuff[6] < 'A') {
 	puts("Invalid inputs to copy command\n");
