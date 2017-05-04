@@ -27,9 +27,6 @@ chmod +x build/cleanOS.sh
 To test the image with qemu, run:
 qemu-system-i386 -fda build/floppya.img --boot order=a
 
-The program will first print out the contents of the
-message.txt file by using interrupt 0x21. Then, it
-will bring up a shell.
 
 The program will print "Starting Shell:" to the console,
 and then the shell prompt "# " will appear on the next
@@ -51,3 +48,31 @@ Commands Available:
 	   'execute /bin/tstpr2' will execute
 	   the program 'tstpr2' in the directory
 	   /bin/
+
+'delete': This command will delete the desired file.
+	  Be sure to include the correct directory
+	  information to access the file.
+	  'delete /var/messag'
+
+'copy':   This command will copy the desired file.
+	  'copy /var/messag m' will copy the contents
+	  of /var/messag into a new file m
+
+
+'dir':	  This command will list the contents of the
+	  directory supplied.
+	  'dir /var/'
+
+'create': This command prompts the user to enter text
+	  to put in a file with the name they supplied
+	  'create m' followed by the user entering text
+	  will create a new file m that has the contents
+	  the user enters up until they enter a blank
+	  line of text
+
+If incorrect arguments are supplied, typically the response
+of the shell will be 'Invalid arguments to ### command' where
+### is the name of the command
+
+Some commands will give an extra bit of information, such as
+what argument is incorrect
