@@ -52,7 +52,6 @@ int main() {
 	exit();
       }
 
-
       c = 5;
       while(1) {
 	if(cmdBuff[c] == ' ') {
@@ -84,6 +83,15 @@ int main() {
       len = strlen(&cmdBuff[4]);
       cmdBuff[4 + len] = '\0';
       getDirList(&cmdBuff[4], fileBuff);
+      for (i = 0; i < 13000; i+=256) {
+        len = strlen(&fileBuff[i]);
+	if (len == 0){
+	  exit();
+	} else {
+	  puts(&fileBuff[i]);
+	  puts("\r\n\0");
+	}
+      }
     } else if (!strncmp("create", cmdBuff, 6)) {
       if (cmdBuff[7] != '/' || cmdBuff[8] < 'A') {
 	puts("Invalid arguments to create command\n");
