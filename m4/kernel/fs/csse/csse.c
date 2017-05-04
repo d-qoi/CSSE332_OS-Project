@@ -26,9 +26,10 @@ void csse_init() {
  * returns: 0 if successful, -1 if not.
  * */
 int csse_fopen(int openFileIndex) {
-  int  i, csse_openFileIndex, dnameLen = 0;
+  int  i, csse_openFileIndex, dnameLen, entryIndex = 0;
   struct csse_openFile * csse_newOpenFile;
   struct openFile * newOpenFile;
+  char dirBuffer[512];
   
   newOpenFile = openFileTable + openFileIndex;
   
@@ -62,26 +63,41 @@ int csse_fopen(int openFileIndex) {
   memset(csse_newOpenFile->fname, 0, 7);
   memcpy(csse_newOpenFile->fname, newOpenFile->relPath + dnameLen, 6);
 
-  /* Load parent directory into loadedSectorBuffer temporarily. */
+  /* Load parent directory into dirBuffer. */
   
   csse_newOpenFile->dirSector = csse_readDir(
     mountTable[newOpenFile->mountIndex].drive,
     csse_newOpenFile->dname,
-    csse_newOpenFile->loadedSectorBuffer,
+    dirBuffer,
     0);
-  
+
   if (csse_newOpenFile->dirSector < 0){
     return -1; /* We had a problem reading the directory. */
   }
 
-  
-  i = csse_findDirEntry(
+  entryIndex = csse_findDirEntry(
     csse_newOpenFile->fname, 
-    csse_newOpenFile->loadedSectorBuffer, 
-    );
+    dirBuffer);
+
+  if (entryIndex < 0) {
+    if (newOpenFile->mode != 'w')
+      return -1;
+    for (i = 0; i < 32; i++){
+      if (dirBuffer[i*32] == 0)
+        break;
+    }
+    if (i == 32)
+      return -1;
+    memcpy(dirBuffer + i*32, csse_newOpenFile->fname, 6);
+    writeSectorTo(
+      dirBuffer, 
+      mountTable[newOpenFile->mountIndex].drive, 
+      csse_newOpenFile->dirSector);
+  }
+  
 
   /* Read sector list from directory. */
-  memcpy(csse_newOpenFile->sectors, csse_newOpenFile->loadedSectorBuffer + i*32 + 6, 26);
+  memcpy(csse_newOpenFile->sectors, dirBuffer + entryIndex*32 + 6, 26);
   
   /* We are succesfull! */
   csse_newOpenFile->open = 0xFF;
@@ -119,7 +135,7 @@ int csse_fread(int openFileIndex, char * buffer, int count) {
     println("Did not find stuff");
     return -1; /* Did not find csse_openFile! */
   }
-
+  
   /* Iterate over all requested bytes. */
   while (count > 0) {
     /* Load next sector if necessary. */
@@ -138,6 +154,7 @@ int csse_fread(int openFileIndex, char * buffer, int count) {
     currOpenFile->readWriteIndex++;
     count--;
   }
+
   return bytesRead;
 }
 
@@ -185,6 +202,7 @@ int csse_fwrite(int openFileIndex, char * buffer, int count) {
       res = csse_openFileLoadNextSector(csse_openFileIndex);
       if (res < 0){
         println("Gen new sector!");
+        
         /* Generate new sector. */
         res = csse_openFileAssignNewSector(
           mountTable[currOpenFile->mountIndex].drive, 
@@ -220,13 +238,14 @@ int csse_fwrite(int openFileIndex, char * buffer, int count) {
 int csse_openFileLoadNextSector(int csse_openFileIndex) {
   int rwIndex, nextSector;
   struct openFile * currOpenFile;
-  
+
   currOpenFile = openFileTable + csse_openFileTable[csse_openFileIndex].openFileIndex;
   
   rwIndex = currOpenFile->readWriteIndex;
   nextSector = csse_openFileTable[csse_openFileIndex].sectors[div(rwIndex, 512)];
   if (nextSector == 0x00)
     return -1; /* No more sectors jumping on the bed! */
+
   readSectorFrom(
     csse_openFileTable[csse_openFileIndex].loadedSectorBuffer, 
     mountTable[currOpenFile->mountIndex].drive,
@@ -435,6 +454,7 @@ int csse_findDirEntry(char * fname, char * dir) {
     if (equalFname)
       return i;
   }
+  println("Did not find it here");
   return -1; /* Did not find it. */
 }
 
