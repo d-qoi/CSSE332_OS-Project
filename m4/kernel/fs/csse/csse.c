@@ -68,7 +68,7 @@ int csse_fopen(int openFileIndex) {
     mountTable[newOpenFile->mountIndex].drive,
     csse_newOpenFile->dname,
     csse_newOpenFile->loadedSectorBuffer,
-    newOpenFile.mode == 'w');
+    newOpenFile->mode == 'w');
   
   if (csse_newOpenFile->dirSector < 0){
     return -1; /* We had a problem reading the directory. */
@@ -184,11 +184,15 @@ int csse_fwrite(int openFileIndex, char * buffer, int count) {
       if (res < 0){
         println("Gen new sector!");
         /* Generate new sector. */
-        res = csse_openFileAssignNewSector(csse_openFileIndex);
+        res = csse_openFileAssignNewSector(
+          mountTable[currOpenFile->mountIndex].drive, 
+          csse_currOpenFile->dirSector, 
+          csse_currOpenFile->fname);
         if (res < 0) {
           println("Cannot gen new sector!");
           break; /*Cannot assign new sector.*/
         }
+        csse_currOpenFile->sectors[csse_currOpenFile->loadedSectorIndex+1] = res;
         res = csse_openFileLoadNextSector(csse_openFileIndex);
         if (res < 0)
           println("Wat, I thought I fixed that..");
@@ -233,29 +237,25 @@ int csse_openFileLoadNextSector(int csse_openFileIndex) {
 /*
  * Find and assign a new sector to an open file.
  * 
- * csse_openFileIndex: A csse open file index.
+ * drive: A drive ID.
+ * dirSector: The sector of the directory block
+ * fname: A filename
  * 
  * */
-int csse_openFileAssignNewSector(int csse_openFileIndex) {
+int csse_openFileAssignNewSector(int drive, int dirSector, char * fname) {
   char mapBuffer[512], dirBuffer[512];
   struct openFile * currOpenFile;
   int dirEntry, sectorSlot, newSector;
-  
-  currOpenFile = openFileTable + csse_openFileTable[csse_openFileIndex].openFileIndex;
-  
+    
   /* Read map. */
-  readSectorFrom(mapBuffer, 
-    mountTable[currOpenFile->mountIndex].drive,
-    1);
+  readSectorFrom(mapBuffer, drive, 1);
 
   /* Read dir */
-  readSectorFrom(dirBuffer,
-    mountTable[currOpenFile->mountIndex].drive,
-    csse_openFileTable[csse_openFileIndex].dirSector);
+  readSectorFrom(dirBuffer, drive, dirSector);
   
   /* Check if there is a slot for a new sector in the directory. */
   for (sectorSlot = 0; sectorSlot < 26; sectorSlot++) {
-    if (csse_openFileTable[csse_openFileIndex].sectors[sectorSlot] == 0x00)
+    if (dirBuffer[dirEntry*32 + 6 + sectorSlot] == 0x00)
       break;
   }
   if (sectorSlot == 26)
@@ -268,25 +268,18 @@ int csse_openFileAssignNewSector(int csse_openFileIndex) {
   }
   if (newSector == 512)
     return -1;
-    
-  dirEntry = csse_findDirEntry(
-    csse_openFileTable[csse_openFileIndex].fname, 
-    dirBuffer);
+
+  dirEntry = csse_findDirEntry(fname, dirBuffer);
   
   /* Reserve sector. */
   mapBuffer[newSector] = 0xFF;
   dirBuffer[dirEntry*32 + 6 + sectorSlot] = newSector;
-  csse_openFileTable[csse_openFileIndex].sectors[sectorSlot] = newSector;
   
   /* Save map. */
-  writeSectorTo(mapBuffer, 
-    mountTable[currOpenFile->mountIndex].drive,
-    1);
+  writeSectorTo(mapBuffer, drive, 1);
   
   /* Save dir */
-  writeSectorTo(dirBuffer,
-    mountTable[currOpenFile->mountIndex].drive,
-    csse_openFileTable[csse_openFileIndex].dirSector);
+  writeSectorTo(dirBuffer, drive, dirSector);
   
   return newSector;
 }
@@ -330,7 +323,7 @@ int csse_listFilesInDir(int drive, char * dname, char * buffer) {
   char dir[512];
   int res, i, count = 0;
   
-  res = csse_readDir(drive, dname, dir);
+  res = csse_readDir(drive, dname, dir, 0);
   if (res < 0)
     return -1;
   
@@ -355,7 +348,7 @@ int csse_listFilesInDir(int drive, char * dname, char * buffer) {
  * 
  * returns the sector number of the found directory, -1 if not found
  **/
-int csse_readDir(int drive, char * dname, char * dirBuffer) {
+int csse_readDir(int drive, char * dname, char * dirBuffer, int create) {
   int nextSector = 2;
   
   /* read root directory */
@@ -375,7 +368,17 @@ int csse_readDir(int drive, char * dname, char * dirBuffer) {
 
     entryIndex = csse_findDirEntry(nameSeg, dirBuffer);
     if (entryIndex < 0) {
-      return -1;
+      if (!create)
+        return -1;
+      else {
+        int i;
+        for (i = 0; i < 32; i++){
+          if (dirBuffer[i*32] == 0)
+            break;
+        }
+        if (i == 32)
+          return -1;
+      }
     }
 
     nextSector = dirBuffer[entryIndex*32 + 6];
@@ -430,7 +433,6 @@ int csse_findDirEntry(char * fname, char * dir) {
     if (equalFname)
       return i;
   }
-  println("404, not found.");
   return -1; /* Did not find it. */
 }
 
