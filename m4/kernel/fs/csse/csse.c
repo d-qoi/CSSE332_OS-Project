@@ -355,7 +355,7 @@ int csse_listFilesInDir(int drive, char * dname, char * buffer) {
   res = csse_readDir(drive, dname, dir, 0);
   if (res < 0)
     return -1;
-  
+  memset(buffer, 0, 1024);
   for (i=0; i < 16; i++) {
     if (dir[i*32] == 0x0)
       continue;

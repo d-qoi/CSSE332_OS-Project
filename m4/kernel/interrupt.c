@@ -32,7 +32,7 @@ int executeProgram(char * path, int segment) {
 }
 
 void terminate() {
-  interrupt(0x21, 4, "/bin/shell", 0x2000, 0);
+  executeProgram("/bin/shell", 0x2000);
 }
 
 void copyLenOut(int len, char * src, char * tgt) {
@@ -55,7 +55,7 @@ void copyLenIn(int len, char * src, char * tgt) {
 
 void handleInterrupt21(int ax, int bx, int cx, int dx) {
   int f, bytesRead, len;
-  char buffer[512];
+  char buffer[1024];
 
   switch (ax) {
     case 0: /* Print *bx as a string */
@@ -129,8 +129,8 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
       restoreDataSegment();
       len = strlen((char *) cx);
       setKernelDataSegment();
+      memset(buffer, 0, 512);
       copyLenOut(len, (char *) cx, buffer);
-      buffer[len] = 0;
       fwrite(f, buffer, len+1);
       fclose(f);
       
@@ -145,7 +145,7 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
       freaddir(buffer, buffer);
       
       len = strlen((char *) buffer);
-      copyLenIn(512, buffer, cx);
+      copyLenIn(1024, buffer, cx);
       
       restoreDataSegment();
       break;
