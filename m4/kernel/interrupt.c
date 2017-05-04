@@ -64,11 +64,14 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
       terminate();
       break;
     case 6: /* Write a sector */
-      freaddir((char *) bx, (char *) cx);
+      writeSector((char *)bx, cx);
       break;
     case 7: /* Delete a file */
       break;
     case 8: /* Write a file */
+      break;
+    case 9:
+      freaddir((char *) bx, (char *) cx);
       break;
   }
 }
