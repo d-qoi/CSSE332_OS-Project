@@ -55,20 +55,23 @@ Commands Available:
 	  'delete /var/messag'
 
 'copy':   This command will copy the desired file.
-	  'copy /var/messag m' will copy the contents
-	  of /var/messag into a new file m
+	  'copy /var/messag /m' will copy the contents
+	  of /var/messag into a new file m in the root
+	  directory
 
 
 'dir':	  This command will list the contents of the
 	  directory supplied.
-	  'dir /var/'
+	  'dir /var/' will provide the contents of
+	  directory /var/
 
 'create': This command prompts the user to enter text
 	  to put in a file with the name they supplied
-	  'create m' followed by the user entering text
+	  'create /m' followed by the user entering text
 	  will create a new file m that has the contents
 	  the user enters up until they enter a blank
-	  line of text
+	  line of text. In this case, m will be in the
+	  root directory
 
 If incorrect arguments are supplied, typically the response
 of the shell will be 'Invalid arguments to ### command' where
