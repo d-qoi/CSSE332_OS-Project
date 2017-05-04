@@ -145,7 +145,7 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
       freaddir(buffer, buffer);
       
       len = strlen((char *) buffer);
-      copyLenIn(len, buffer, 512);
+      copyLenIn(512, buffer, cx);
       
       restoreDataSegment();
       break;
