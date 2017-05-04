@@ -13,5 +13,6 @@ int strncmp(char * a, char * b, int max);
 void * memcpy(void *, const void *, int count);
 void * memset(void *s, int c, int count);
 void removeLinefeed(char * s);
+int strlen(char *s);
 
 #endif

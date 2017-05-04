@@ -10,9 +10,9 @@
 #define HARDCODE 1
 
 int main() {
-  char cmdBuff[256], pathBuff[512], fileBuff[13000], temp;
+  char cmdBuff[256], pathBuff[512], fileBuff[13000], temp[256];
   int i, j, k, equals, ind = 0;
-  int  c;
+  int  c, len, place = 0;
   for(i = 0; i < 256; i++) {
     cmdBuff[i] = 0;
   }
@@ -73,7 +73,21 @@ int main() {
       }
       getDirList(&cmdBuff[4], fileBuff);
     } else if (!strncmp("create", cmdBuff, 6)) {
-      
+      if (cmdBuff[7] == '\0') {
+	puts("Invalid arguments to create command\n");
+	exit();
+      while(1) {
+	gets(temp);
+	len = strlen(temp);
+	if (len == 0) {
+	  fwrite(&cmdBuff[7], fileBuff);
+	  exit();
+	} else {
+	  for(i = 0; i < len; i++) {
+	    fileBuff[place++] = temp[i];
+	  }
+	}
+      }
     } else {
       puts("Unknown command: ");
       puts(cmdBuff);
