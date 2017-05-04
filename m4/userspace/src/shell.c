@@ -13,6 +13,9 @@ int main() {
   char cmdBuff[256], pathBuff[512], fileBuff[13000], temp;
   int i, j, k, equals, ind = 0;
   int  c;
+  for(i = 0; i < 256; i++) {
+    cmdBuff[i] = 0;
+  }
   cmdBuff[0] = 0;
   pathBuff[0] = 0;
   fileBuff[0] = 0;
@@ -22,6 +25,10 @@ int main() {
       
   if (HARDCODE) {
     if (!strncmp("type", cmdBuff, 4)) {
+      if (cmdBuff[5] == '\0') {
+	puts("Invalid arguments to type command\n");
+	exit();
+      }
       fread(&cmdBuff[5], fileBuff);
       puts(fileBuff);
       exit();
@@ -30,9 +37,13 @@ int main() {
       /*interrupt(0x21, 4, cmdBuff, 0x2000, 0);*/
       
     } else if (!strncmp("delete", cmdBuff, 6)) {
+      if (cmdBuff[8] == '\0') {
+	puts("Invalid arguments to delete command\n");
+	exit();
+      }
       fdel(&cmdBuff[8]);
     } else if (!strncmp("copy", cmdBuff, 4)) {
-      if(cmdBuff[5] != ' ') {
+      if(cmdBuff[6] == '\n') {
 	puts("Invalid inputs to copy command\n");
 	exit();
       }
@@ -49,9 +60,17 @@ int main() {
 	c++;
       }
       c++;
+      if(cmdBuff[c] == '\0') {
+	puts("Invalid output file\n");
+	exit();
+      }
       fwrite(&cmdBuff[c], fileBuff);
       
     } else if (!strncmp("dir", cmdBuff, 3)) {
+      if (cmdBuff[4] == '\0') {
+	puts("Invalid arguments to dir command\n");
+	exit();
+      }
       getDirList(&cmdBuff[4], fileBuff);
     } else if (!strncmp("create", cmdBuff, 6)) {
       
