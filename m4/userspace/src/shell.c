@@ -56,7 +56,7 @@ int main() {
       c = 5;
       while(1) {
 	if(cmdBuff[c] == ' ') {
-	  cmdBuff[c] = '\0';
+	  cmdBuff[c] = 0;
 	  break;
 	}
 	if(cmdBuff[c] == '\0') {
