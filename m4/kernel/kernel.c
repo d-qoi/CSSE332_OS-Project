@@ -24,7 +24,7 @@ int main() {
   println("Opening /var/messag");
   f1 = fopen("/var/messag", 'r');
   
-  println("Opening /var/testme");
+  println("Opening /var/test");
   f2 = fopen("/var/test", 'w');
 
   println("Reading from file!");
