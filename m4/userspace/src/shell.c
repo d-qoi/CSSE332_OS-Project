@@ -76,6 +76,7 @@ int main() {
       if (cmdBuff[7] == '\0') {
 	puts("Invalid arguments to create command\n");
 	exit();
+      }
       while(1) {
 	gets(temp);
 	len = strlen(temp);
