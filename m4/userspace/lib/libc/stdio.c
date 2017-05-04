@@ -14,7 +14,7 @@ void gets(char * str) {
 }
 
 void getDirList(char * fname, char * buff) {
-  interrupt(0x21, 6, fname, buff, 0);
+  interrupt(0x21, 9, fname, buff, 0);
 }
 
 void exec(char * fname) {
