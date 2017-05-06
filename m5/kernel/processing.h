@@ -9,20 +9,23 @@
 #define PROCESSLIMIT 32
 
 #define TOSEGMENT(I) I<<12;	/* segment is 0xN000 */
-#define TOINT(S) S>>12;		
+#define TOINT(S) S>>12;
 
-int executeProgram(char * path, int segment);
+#define GRS getRunningSegment()
 
-struct process* allocateProcess();
-struct process* reallocateProcess(int segment);
-struct process* freeProcess(int segment);
-struct process* getProcessByName(char * name);
-struct process* getCurrentProcess();
+int executeProgram(char *path, int segment);
+
+struct process *allocateProcess();
+struct process *reallocateProcess(int segment);
+struct process *freeProcess(int segment);
+struct process *getProcessByName(char *name);
+struct process *getCurrentProcess();
+int getRunningSegment();
 
 struct process {
-	int segment;
-	char running;
-	char name[PROCESSNAMELIMIT];
+  int segment;
+  char running;
+  char name[PROCESSNAMELIMIT];
 };
 
 struct process processTable[PROCESSLIMIT];

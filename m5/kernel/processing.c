@@ -9,30 +9,30 @@
 #include "vfs.h"
 #include "fs/csse/csse.h"
 
-int executeProgram(char * path, int segment) {
+int executeProgram(char *path, int segment) {
   char buffer[CSSE_MAX_FSIZE];
   int i, f, bytesRead;
-  struct process * currentProcess;
+  struct process *currentProcess;
 
   if (segment) {
-  	currentProcess = reallocateProcess(segment);
+    currentProcess = reallocateProcess(segment);
   } else {
-  	currentProcess = allocateProcess();
+    currentProcess = allocateProcess();
   }
-  
+
   segment = currentProcess->segment;
 
   /* Read file and return if it failed. */
   f = fopen(path, 'r');
   bytesRead = fread(f, buffer, CSSE_MAX_FSIZE);
   fclose(f);
-  if (!bytesRead) 
+  if (!bytesRead)
     return -1;
-  
+
   for (i = 0; i < bytesRead; i++) {
     putInMemory(segment, i, buffer[i]);
   }
-  
+
   launchProgram(segment);
   return 0;
 }
@@ -89,5 +89,13 @@ struct process *getCurrentProcess() {
   /* if it is unable to find a running process */
   processTable[0].running = 1;
   return &processTable[0];
+}
+
+/* get Running Segment */
+int getRunningSegment() {
+	int i;
+  for (i = 0; i < PROCESSLIMIT; i++)
+    if (processTable[i].running)
+      return processTable[i].segment;
 }
 
