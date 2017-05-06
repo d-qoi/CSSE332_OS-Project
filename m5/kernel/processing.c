@@ -12,8 +12,16 @@
 int executeProgram(char * path, int segment) {
   char buffer[CSSE_MAX_FSIZE];
   int i, f, bytesRead;
+  struct process * currentProcess;
+
+  if (segment) {
+  	currentProcess = reallocateProcess(segment);
+  } else {
+  	currentProcess = allocateProcess();
+  }
   
-  
+  segment = currentProcess->segment;
+
   /* Read file and return if it failed. */
   f = fopen(path, 'r');
   bytesRead = fread(f, buffer, CSSE_MAX_FSIZE);
