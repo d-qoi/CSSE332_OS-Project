@@ -19,7 +19,7 @@ int main() {
   cmdBuff[0] = 0;
   pathBuff[0] = 0;
   fileBuff[0] = 0;
-  puts("0xG00 ");
+  puts("0xG00: ");
   gets(cmdBuff);
   removeLinefeed(cmdBuff);
 
