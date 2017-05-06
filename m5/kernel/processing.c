@@ -6,6 +6,28 @@
 
 #include "processing.h"
 #include "lib/string.h"
+#include "vfs.h"
+#include "fs/csse/csse.h"
+
+int executeProgram(char * path, int segment) {
+  char buffer[CSSE_MAX_FSIZE];
+  int i, f, bytesRead;
+  
+  
+  /* Read file and return if it failed. */
+  f = fopen(path, 'r');
+  bytesRead = fread(f, buffer, CSSE_MAX_FSIZE);
+  fclose(f);
+  if (!bytesRead) 
+    return -1;
+  
+  for (i = 0; i < bytesRead; i++) {
+    putInMemory(segment, i, buffer[i]);
+  }
+  
+  launchProgram(segment);
+  return 0;
+}
 
 /* allocates a process if no segment is given */
 struct process *allocateProcess() {

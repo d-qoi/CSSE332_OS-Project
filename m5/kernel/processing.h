@@ -11,9 +11,7 @@
 #define TOSEGMENT(I) I<<12;	/* segment is 0xN000 */
 #define TOINT(S) S>>12;		
 
-/*
-Definitions of interrupt commands
-*/
+int executeProgram(char * path, int segment);
 
 struct process* allocateProcess();
 struct process* reallocateProcess(int segment);
