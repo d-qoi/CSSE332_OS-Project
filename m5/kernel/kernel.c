@@ -44,7 +44,9 @@ int main() {
   interrupt(0x21, 3, "/var/messag", buffer, 0);
   interrupt(0x21, 0, buffer, 0, 0);
   */
-  
+
+  println("Starting timer");
+  makeTimerInterrupt();
   println("Starting shell:");
   executeProgram("/bin/shell", 0x2000);
   

@@ -133,5 +133,6 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
 }
 
 void handleTimerInterrupt(int segment, int sp) {
+  println("Tic");
   returnFromTimer(segment, sp);
 }

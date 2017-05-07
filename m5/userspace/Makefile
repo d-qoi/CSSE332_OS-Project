@@ -19,10 +19,10 @@ src/shell.o: src/shell.c
 	bcc $(CFLAGS) -o src/shell.o src/shell.c
 
 bin/pargs: src/pargs.o lib/libc/stdio.o
-	ld86 -o $@ -d $^
+	#ld86 -o $@ -d $^
 
 src/pargs.o: src/pargs.c
-	bcc $(CFLAGS) -o $@ $^
+	#bcc $(CFLAGS) -o $@ $^
 
 lib/libc/stdio.o: lib/libc/stdio.c
 	bcc $(CFLAGS) -o lib/libc/stdio.o lib/libc/stdio.c
