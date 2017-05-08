@@ -13,5 +13,7 @@ Definitions of interrupt commands
 
 void handleInterrupt21(int, int, int, int);
 
+void handleTimerInterrupt(int segment, int sp);
+
 #endif
 

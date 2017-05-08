@@ -152,6 +152,8 @@ void handleTimerInterrupt(int segment, int sp) {
   }
   println("\0");
   printHex(currentProcess);
+  printHex(segment);
+  printHex(sp);
   println("\0");
   returnFromTimer(segment, sp);
 }
