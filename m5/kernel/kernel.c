@@ -19,7 +19,6 @@ int main() {
   println("Initializing Kernel.");
   for(f1 = 0; f1 < PROCESSLIMIT; f1++) {
     processTable[f1].sp = 0xFF00;
-    println(processTable[f1].sp);
     processTable[f1].running = 0;
     processTable[f1].segment = 0;
   }
