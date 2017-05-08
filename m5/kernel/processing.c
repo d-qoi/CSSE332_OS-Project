@@ -10,6 +10,9 @@
 #include "fs/csse/csse.h"
 #include "lib/queue.h"
 
+int currentProcess = 0;
+int firstOne = 1;
+
 void initializeTable() {
   int i;
   for (i = 0; i < PROCESSLIMIT; i++) {
@@ -57,6 +60,7 @@ struct process *allocateProcess() {
   for (i = 0; i < PROCESSLIMIT; i++) {
     if (processTable[i].segment == 0) {
       println("allocating");
+      printHex(i);
       processTable[i].segment = TOSEGMENT(i + 2);
       return &processTable[i];
     }
@@ -125,16 +129,22 @@ void handleTimerInterrupt(int segment, int sp) {
   struct process * proc;
   /* Back up the sp in the segment process table entry */
   int temp;
-  temp = TOINT(segment);
-  processTable[temp].stackPointer = sp;
+  setKernelDataSegment();
+  println("\0");
+  println("Before:");
+  temp = segment>>12 - 2;
+  printhex(temp);
+  if (!first)
+    processTable[currentProcess].stackPointer = sp;
+  first = 0;
+  printhex(segment);
+  println("\0");
 
   /* Get the next proc to run from the queue */
   proc = getProc();
   if (proc == 0) {
     println("No procs in queue");
     returnFromTimer(segment, sp);
-  } else {
-    println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
   }
   /* If it still wants to run, put it back on the queue */
   if (proc->running) {
@@ -144,5 +154,9 @@ void handleTimerInterrupt(int segment, int sp) {
   /* Copy the new parameters from the new proc */
   segment = proc->segment;
   sp = proc->stackPointer;
+  println("After:");
+  printHex(segment);
+  println("\0");
+  restoreDataSegment();
   returnFromTimer(segment, sp);
 }
