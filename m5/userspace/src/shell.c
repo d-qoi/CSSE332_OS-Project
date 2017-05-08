@@ -13,6 +13,7 @@ int main() {
   char cmdBuff[256], pathBuff[512], fileBuff[13000], temp[256];
   int i, j, k, equals, ind = 0;
   int  c, len, place = 0;
+  enableInterrupts();
   for(i = 0; i < 256; i++) {
     cmdBuff[i] = 0;
   }

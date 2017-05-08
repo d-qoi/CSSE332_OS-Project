@@ -13,7 +13,8 @@
 
 #define GRS getRunningSegment()
 
-int executeProgram(char *path, int segment);
+void initializeTable();
+int executeProgram(char *path);
 
 struct process *allocateProcess();
 struct process *reallocateProcess(int segment);
@@ -21,9 +22,11 @@ struct process *freeProcess(int segment);
 struct process *getProcessByName(char *name);
 struct process *getCurrentProcess();
 int getRunningSegment();
+void handleTimerInterrupt(int segment, int sp);
 
 struct process {
   int segment;
+  int stackPointer;
   char running;
   char name[PROCESSNAMELIMIT];
 };

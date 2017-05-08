@@ -79,7 +79,7 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
 
     copyLenOut(len, (char *) bx, buffer);
 
-    executeProgram(buffer, cx);
+    executeProgram(buffer);
 
     restoreDataSegment();
     break;
@@ -130,9 +130,4 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
     restoreDataSegment();
     break;
   }
-}
-
-void handleTimerInterrupt(int segment, int sp) {
-  /*println("Tic");*/
-  returnFromTimer(segment, sp);
 }

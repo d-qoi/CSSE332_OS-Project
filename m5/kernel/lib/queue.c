@@ -1,5 +1,6 @@
 
 #include "../interrupt.h"
+#include "../processing.h"
 #include "./queue.h"
 
 Queue q;
@@ -18,8 +19,8 @@ int addProc(struct process * proc) {
       return -1;
     } else {
       /* If not, then add the proc ptr */
-      q.tail = 0;
       procArray[q.tail] = proc;
+      q.tail = 0;
       return 0;
     }
   } else {
@@ -29,8 +30,7 @@ int addProc(struct process * proc) {
       return -1;
     } else {
       /* Otherwise, increment and store new proc ptr */
-      q.tail += 1;
-      procArray[q.tail] = proc;
+      procArray[q.tail++] = proc;
       return 0;
     }
   }
