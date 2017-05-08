@@ -143,10 +143,9 @@ void handleTimerInterrupt(int segment, int sp) {
   for (i = 0; i < PROCESSLIMIT; i++) {
     if (processTable[i].running) {
       println("Dispatch");
-      /* printhex(processTable[i].sp); */
-      temp2 = processTable[i].sp;
-      temp = (i + 2) * 0x1000;
-      printHex(temp2);
+      printHex(processTable[i].sp);
+      sp = processTable[i].sp;
+      segment = (i + 2) * 0x1000;
       currentProcess = i;
       break;
     }
@@ -154,5 +153,5 @@ void handleTimerInterrupt(int segment, int sp) {
   println("\0");
   printHex(currentProcess);
   println("\0");
-  returnFromTimer(temp, temp2);
+  returnFromTimer(segment, sp);
 }
