@@ -6,9 +6,30 @@
 
 #include "io.h"
 
+void printSegments() {
+  int ss, ds, cs, es;
+  ss = getStackSegment();
+  ds = getDataSegment();
+  cs = getCodeSegment();
+  es = getExtraSegment();
+  
+  setDataSegment(0x1000);
+
+  printString("ds: ");
+  printHex(ds);
+  printString("\r\ncs: ");
+  printHex(cs);
+  printString("\r\nss: ");
+  printHex(ss);
+  printString("\r\nes: ");
+  printHex(es);
+  printString("\n\r");
+
+  setDataSegment(ds);
+}
 
 void printHex(int value) {
-  if (value > 16) {
+  if (value >= 16) {
     int newVal = div(value, 16);
     printHex(newVal);
     value -= newVal*16;
@@ -20,7 +41,6 @@ void printHex(int value) {
     PRINT_CHAR(value + '0');
   }
 }
-
 
 void printString(char * string) {
   int ind = 0;

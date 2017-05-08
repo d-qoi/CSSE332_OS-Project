@@ -21,6 +21,11 @@ int main() {
     processTable[f1].sp = 0xFF00;
     processTable[f1].running = 0;
     processTable[f1].segment = 0;
+    memcpy(processTable[f1].header, "Begin proc", 10);
+    processTable[f1].magica = 'a';
+    processTable[f1].magicb = 'b';
+    processTable[f1].magicc = 'c';
+    processTable[f1].magicd = 'd';
   }
   /* for (f1 = 0; f1 < PROCESSLIMIT; f1++) { */
   /*   printhex(processTable[f1].sp); */
@@ -60,6 +65,6 @@ int main() {
   */
   
   println("Starting shell:");
-  executeProgram("/bin/shell", 0x2000);
+  executeProgram("/bin/shell");
   while(1);
 }

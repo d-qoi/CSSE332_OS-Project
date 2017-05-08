@@ -23,9 +23,14 @@ struct process *getCurrentProcess();
 int getRunningSegment();
 
 struct process {
+  char header[10];
+  char magica;
   int sp;
+  char magicb;
   int segment;
+  char magicc;
   char running;
+  char magicd;
   char name[PROCESSNAMELIMIT];
 };
 

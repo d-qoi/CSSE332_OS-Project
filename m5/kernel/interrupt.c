@@ -15,18 +15,18 @@ void terminate() {
   processTable[currentProcess].running = 0;
 }
 
-void copyLenOut(int len, char *src, char *tgt) {
+void copyBytesFromUserspace(int len, char * src, char * tgt) {
   while (len > 0) {
-    *tgt = getFromMemory(GRS, src); /* GRS is a macro defined in processing.h, for Get Running Segment */
+    *tgt = getFromMemory(0x2000, src);
     src++;
     tgt++;
     len--;
   }
 }
 
-void copyLenIn(int len, char *src, char *tgt) {
+void copyBytesToUserspace(int len, char * src, char * tgt) {
   while (len > 0) {
-    putInMemory(GRS, tgt, *src);
+    putInMemory(0x2000, tgt, *src);
     src++;
     tgt++;
     len--;
@@ -38,107 +38,112 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
   char buffer[1024];
 
   switch (ax) {
-  case 0: /* Print *bx as a string */
-    printString((char *) bx);
-    break;
-  case 1: /* Read string to *bx */
-    readString((char *) bx);
-    break;
-  case 2: /* Read sector cx to bx */
-    readSector((char *) bx, cx);
-    break;
-  case 3: /* Read file at *bx into *cx */
-    len = strlen((char *) bx);
-    setKernelDataSegment();
-    copyLenOut(len, (char *) bx, buffer);
-    buffer[len] = 0;
+    case 0: /* Print *bx as a string */
+      printString((char *) bx);
+      break;
+    case 1: /* Read string to *bx */
+      readString((char *) bx);
+      break;
+    case 2: /* Read sector cx to bx */
+      readSector((char *) bx, cx);
+      break;
+    case 3: /* Read file at *bx into *cx */
+      len = strlen((char *) bx);
+      setKernelDataSegment();
+      copyBytesFromUserspace(len, (char *) bx, buffer);
+      buffer[len] = 0;
 
-    f = fopen(buffer, 'r');
-    if (f < 0) {
-      println("Could not open file.");
+      f = fopen(buffer, 'r');
+      if (f < 0){
+        println("Could not open file.");
+        restoreDataSegment();
+        break;
+      }
+      bytesRead = fread(f, buffer, CSSE_MAX_FSIZE);
+      fclose(f);
+      
+      if (bytesRead < 0) {
+        restoreDataSegment();
+        break;
+      }
+      
+      len = strlen((char *) buffer);
+      copyBytesToUserspace(len, buffer, cx);
+      
+      restoreDataSegment();
+    break;
+    case 4: 
+      /* Execute program at filename *bx in segment cx*/
+      len = strlen((char *) bx);
+      setKernelDataSegment();
+      
+      copyBytesFromUserspace(len, (char *) bx, buffer);
+      
+      executeProgram(buffer);
+      
       restoreDataSegment();
       break;
-    }
-    bytesRead = fread(f, buffer, CSSE_MAX_FSIZE);
-    fclose(f);
-
-    if (bytesRead < 0) {
+    case 5: /* Terminate current program. */
+      setKernelDataSegment();
+      terminate();
+      break;
+    case 6: /* Write a sector */
+      writeSector((char *) bx, (char *) cx);
+      break;
+    case 7: /* Delete a file */
+      len = strlen((char *) bx);
+      setKernelDataSegment();
+      copyBytesFromUserspace(len, (char *) bx, buffer);
+      buffer[len] = 0;
+      fdel(buffer);
+      
       restoreDataSegment();
       break;
-    }
-
-    len = strlen((char *) buffer);
-    copyLenIn(len, buffer, cx);
-
-    restoreDataSegment();
-    break;
-  case 4:
-    /* Execute program at filename *bx in segment cx*/
-    len = strlen((char *) bx);
-    setKernelDataSegment();
-
-    copyLenOut(len, (char *) bx, buffer);
-
-    executeProgram(buffer, cx);
-
-    restoreDataSegment();
-    break;
-  case 5: /* Terminate current program. */
-    setKernelDataSegment();
-    terminate();
-    break;
-  case 6: /* Write a sector */
-    writeSector((char *) bx, (char *) cx);
-    break;
-  case 7: /* Delete a file */
-    len = strlen((char *) bx);
-    setKernelDataSegment();
-    copyLenOut(len, (char *) bx, buffer);
-    buffer[len] = 0;
-    fdel(buffer);
-
-    restoreDataSegment();
-    break;
-  case 8: /* Write a file */
-    len = strlen((char *) bx);
-    setKernelDataSegment();
-    copyLenOut(len, (char *) bx, buffer);
-    buffer[len] = 0;
-    f = fopen(buffer, 'w');
-
-    restoreDataSegment();
-    len = strlen((char *) cx);
-    setKernelDataSegment();
-    memset(buffer, 0, 512);
-    copyLenOut(len, (char *) cx, buffer);
-    fwrite(f, buffer, len + 1);
-    fclose(f);
-
-    restoreDataSegment();
-    break;
-  case 9:
-    len = strlen((char *) bx);
-    setKernelDataSegment();
-    copyLenOut(len, (char *) bx, buffer);
-    buffer[len] = 0;
-
-    freaddir(buffer, buffer);
-
-    len = strlen((char *) buffer);
-    copyLenIn(1024, buffer, cx);
-
-    restoreDataSegment();
-    break;
+    case 8: /* Write a file */
+      len = strlen((char *) bx);
+      setKernelDataSegment();
+      copyBytesFromUserspace(len, (char *) bx, buffer);
+      buffer[len] = 0;
+      f = fopen(buffer, 'w');
+      
+      restoreDataSegment();
+      len = strlen((char *) cx);
+      setKernelDataSegment();
+      memset(buffer, 0, 512);
+      copyBytesToUserspace(len, (char *) cx, buffer);
+      fwrite(f, buffer, len+1);
+      fclose(f);
+      
+      restoreDataSegment();
+      break;
+    case 9:
+      len = strlen((char *) bx);
+      setKernelDataSegment();
+      copyBytesFromUserspace(len, (char *) bx, buffer);
+      buffer[len] = 0;
+      
+      freaddir(buffer, buffer);
+      
+      len = strlen((char *) buffer);
+      copyBytesToUserspace(1024, buffer, cx);
+      
+      restoreDataSegment();
+      break;
   }
 }
 
 void handleTimerInterrupt(int segment, int sp) {
+  char msg[10];
   int i, temp, temp2;
-  println("Tic");
+  memcpy(msg, "findme!", 8);
+  i=78;
+  println("\nTic");
+  printSegments();
   printHex(sp);
-  println("\0");
+  println("Tock");
   printHex(currentProcess);
   println("\0");
+  while(1);
   processTable[currentProcess].sp = sp;
   for (i = 0; i < PROCESSLIMIT; i++) {
     if (processTable[i].running) {

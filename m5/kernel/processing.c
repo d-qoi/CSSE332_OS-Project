@@ -10,16 +10,13 @@
 #include "fs/csse/csse.h"
 
 
-int executeProgram(char *path, int segment) {
+int executeProgram(char *path) {
   char buffer[CSSE_MAX_FSIZE];
   int i, f, bytesRead;
   struct process *currentProcess;
 
   currentProcess = allocateProcess();
-
-
-  segment = currentProcess->segment;
-
+  
   /* Read file and return if it failed. */
   f = fopen(path, 'r');
   bytesRead = fread(f, buffer, CSSE_MAX_FSIZE);
@@ -28,10 +25,12 @@ int executeProgram(char *path, int segment) {
     return -1;
 
   for (i = 0; i < bytesRead; i++) {
-    putInMemory(segment, i, buffer[i]);
+    putInMemory(currentProcess->segment, i, buffer[i]);
   }
 
-  initializeProgram(segment);
+  initializeProgram(currentProcess->segment);
+  printString("Initialized ");
+  println(path);
   return 0;
 }
 
@@ -42,7 +41,7 @@ struct process *allocateProcess() {
     if (processTable[i].segment == 0) {
       processTable[i].segment = TOSEGMENT(i + 2);
       processTable[i].running = 1;
-      return &processTable[i];
+      return processTable + i;
     }
   }
   return 0;
