@@ -9,16 +9,14 @@
 #include "vfs.h"
 #include "fs/csse/csse.h"
 
+
 int executeProgram(char *path, int segment) {
   char buffer[CSSE_MAX_FSIZE];
   int i, f, bytesRead;
   struct process *currentProcess;
 
-  if (segment) {
-    currentProcess = reallocateProcess(segment);
-  } else {
-    currentProcess = allocateProcess();
-  }
+  currentProcess = allocateProcess();
+
 
   segment = currentProcess->segment;
 
@@ -33,7 +31,7 @@ int executeProgram(char *path, int segment) {
     putInMemory(segment, i, buffer[i]);
   }
 
-  launchProgram(segment);
+  initializeProgram(segment);
   return 0;
 }
 
@@ -42,7 +40,8 @@ struct process *allocateProcess() {
   int i = 0;
   for (i = 0; i < PROCESSLIMIT; i++) {
     if (processTable[i].segment == 0) {
-      processTable[i].segment == TOSEGMENT(i + 2);
+      processTable[i].segment = TOSEGMENT(i + 2);
+      processTable[i].running = 1;
       return &processTable[i];
     }
   }

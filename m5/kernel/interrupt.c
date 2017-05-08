@@ -12,7 +12,7 @@
 #include "processing.h"
 
 void terminate() {
-  executeProgram("/bin/shell", 0);
+  processTable[currentProcess].running = 0;
 }
 
 void copyLenOut(int len, char *src, char *tgt) {
@@ -133,5 +133,26 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
 }
 
 void handleTimerInterrupt(int segment, int sp) {
-  returnFromTimer(segment, sp);
+  int i, temp, temp2;
+  println("Tic");
+  printHex(sp);
+  println("\0");
+  printHex(currentProcess);
+  println("\0");
+  processTable[currentProcess].sp = sp;
+  for (i = 0; i < PROCESSLIMIT; i++) {
+    if (processTable[i].running) {
+      println("Dispatch");
+      /* printhex(processTable[i].sp); */
+      temp2 = processTable[i].sp;
+      temp = (i + 2) * 0x1000;
+      printHex(temp2);
+      currentProcess = i;
+      break;
+    }
+  }
+  println("\0");
+  printHex(currentProcess);
+  println("\0");
+  returnFromTimer(temp, temp2);
 }

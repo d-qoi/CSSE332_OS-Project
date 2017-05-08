@@ -8,13 +8,28 @@
 #include "fs/csse/csse.h"
 #include "vfs.h"
 #include "io.h"
+#include "processing.h"
+
+
 
 int main() {
   char buffer[CSSE_MAX_FSIZE];  /* this is the maximum size of a file */
   int f1, f2, res;
   char * message = "This is a very interesting message!\n\r";
   println("Initializing Kernel.");
-
+  for(f1 = 0; f1 < PROCESSLIMIT; f1++) {
+    processTable[f1].sp = 0xFF00;
+    println(processTable[f1].sp);
+    processTable[f1].running = 0;
+    processTable[f1].segment = 0;
+  }
+  /* for (f1 = 0; f1 < PROCESSLIMIT; f1++) { */
+  /*   printhex(processTable[f1].sp); */
+  /*   printhex(processTable[f1].running); */
+  /*   printhex(processTable[f1].segment); */
+  /*   println("\0"); */
+  /* } */
+  makeTimerInterrupt();
   makeInterrupt21();
   
   vfs_init();
@@ -47,5 +62,5 @@ int main() {
   
   println("Starting shell:");
   executeProgram("/bin/shell", 0x2000);
-  
+  while(1);
 }

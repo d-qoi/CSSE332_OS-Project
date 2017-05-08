@@ -4,6 +4,7 @@
 ;lib.asm contains assembly functions that you can use in the shell
 
 	.global _interrupt
+	.global _enableInterrupts
 
 ;int interrupt (int number, int AX, int BX, int CX, int DX)
 _interrupt:
@@ -27,3 +28,8 @@ intr:	int #0x00	;call the interrupt (00 will be changed above)
 	pop bp
 	ret
 
+;void enableInterrupts()
+;call at the beginning of programs.  allows timer preemption
+_enableInterrupts:
+	sti
+	ret

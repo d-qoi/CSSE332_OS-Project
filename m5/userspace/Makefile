@@ -4,7 +4,7 @@
 
 CFLAGS = -ansi -c -Ilib/libc
 
-all: bin/shell bin/type bin/pargs
+all: bin/shell bin/type # bin/pargs
 
 bin/type: src/type.o lib/libc/stdio.o lib/libc/string.o lib/lib_asm.o
 	ld86 -o bin/type -d src/type.o lib/libc/stdio.o lib/libc/string.o lib/lib_asm.o
@@ -22,7 +22,7 @@ bin/pargs: src/pargs.o lib/libc/stdio.o
 	ld86 -o $@ -d $^
 
 src/pargs.o: src/pargs.c
-	bcc $(CFLAGS) -o $@ $^
+#	bcc $(CFLAGS) -o $@ $^
 
 lib/libc/stdio.o: lib/libc/stdio.c
 	bcc $(CFLAGS) -o lib/libc/stdio.o lib/libc/stdio.c

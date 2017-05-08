@@ -23,6 +23,7 @@ struct process *getCurrentProcess();
 int getRunningSegment();
 
 struct process {
+  int sp;
   int segment;
   char running;
   char name[PROCESSNAMELIMIT];
@@ -30,4 +31,5 @@ struct process {
 
 struct process processTable[PROCESSLIMIT];
 
+int currentProcess = 0;
 
