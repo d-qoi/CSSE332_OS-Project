@@ -9,5 +9,5 @@ int main(int a, char ** b) {
 	a = "1234\0";
 	puts(a);
 	puts(b);
-
+	exit();
 }

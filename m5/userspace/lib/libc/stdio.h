@@ -10,8 +10,7 @@
 void puts(char * str);
 void gets(char * str);
 void getDirList(char * fname, char * buff);
-void exec(char * fname);
-void exec(char * fname, int segment);
+void exec(char * fname, int shouldWait);
 void exit();
 void kill(int proc);
 void fread(char * fname, char * buf);
