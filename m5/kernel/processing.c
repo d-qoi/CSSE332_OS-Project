@@ -13,12 +13,12 @@
 int executeProgram(char *path, int segment) {
   char buffer[CSSE_MAX_FSIZE];
   int i, f, bytesRead;
-  struct process *currentProcess;
+  int newProc;
 
-  currentProcess = allocateProcess();
+  newProc = allocateProcess();
 
 
-  segment = currentProcess->segment;
+  segment = TOSEGMENT(newProc + 2);
 
   /* Read file and return if it failed. */
   f = fopen(path, 'r');
@@ -36,65 +36,63 @@ int executeProgram(char *path, int segment) {
 }
 
 /* allocates a process if no segment is given */
-struct process *allocateProcess() {
+int allocateProcess() {
   int i = 0;
   println("allocation");
   for (i = 0; i < PROCESSLIMIT; i++) {
-    if (processTable[i].segment == 0) {
-      printHex(i);
-      processTable[i].segment = TOSEGMENT(i + 2);
-      printHex(processTable[i].segment);
+    if (processTable[i].running == 0) {
       processTable[i].running = 1;
-      return &processTable[i];
+      return i;
     }
   }
   return 0;
 }
 
-/*
-returns the process struct that works with the segment
-or returns a new process struct
- */
-struct process *reallocateProcess(int segment) {
-  segment = TOINT(segment);
-  if (((segment - 2) >= 0) && ((segment - 2) <= 32)) {
-    processTable[segment - 2].segment = TOSEGMENT(segment);
-    return &processTable[segment - 2];
-  }
-  return allocateProcess();
-}
-
-/* zeroes out a process struct at a given segment */
-struct process *freeProcess(int segment) {
-  segment = TOINT(segment);
-  if (((segment - 2) >= 0) && ((segment - 2) <= 32)) {
-    memset(processTable[segment - 2], 0, sizeof(struct process));
-    return &processTable[segment - 2];
-  }
-  return 0;
-}
-
-struct process *getProcessByName(char *name) {
-  int i;
-  for (i = 0; i < PROCESSLIMIT; i++)
-    if (strcmp(name, processTable[i].name))
-      return &processTable[i];
-  return 0;
-}
-
-struct process *getCurrentProcess() {
-  int i;
-  for (i = 0; i < PROCESSLIMIT; i++)
-    if (processTable[i].running)
-      return &processTable[i];
-
-  /* if it is unable to find a running process */
-  processTable[0].running = 1;
-  return &processTable[0];
-}
-
 /* get Running Segment */
 int getRunningSegment() {
-  return processTable[currentProcess].segment;
+  return TOSEGMENT(currentProcess + 2);
 }
 
+void clearWait(int proc) {
+  int i;
+  for (i = 0; i < PROCESSLIMIT; i++) {
+    if (processTable[i].waiting == proc) {
+      processTable[i].waiting = -1;
+    }
+  }
+}
+
+void terminate(int proc) {
+  processTable[proc].running = 0;
+  processTable[proc].sp = 0xFF00;
+  processTable[proc].waiting = -1;
+  clearWait(proc);
+}
+
+void handleTimerInterrupt(int segment, int sp) {
+  int i, temp, temp2;
+  if (TOSEGMENT(currentProcess + 2) == segment)
+    processTable[currentProcess].sp = sp;
+  if (processTable[currentProcess].running == 0) {
+    clearWait(currentProcess);
+  }
+  for (i = currentProcess + 1; i < PROCESSLIMIT; i++) {
+    if (processTable[i].running && processTable[i].waiting == -1) {
+      /* println("Dispatch"); */
+      sp = processTable[i].sp;
+      segment = (i + 2) * 0x1000;
+      currentProcess = i;
+      returnFromTimer(segment, sp);
+    }
+  }
+  for (i = 0; i < currentProcess + 1; i++) {
+    if (processTable[i].running  && processTable[i].waiting == -1) {
+      /* println("Dispatch"); */
+      sp = processTable[i].sp;
+      segment = (i + 2) * 0x1000;
+      currentProcess = i;
+      returnFromTimer(segment, sp);
+    }
+  }
+  returnFromTimer(segment, sp);
+}

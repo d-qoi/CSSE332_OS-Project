@@ -20,7 +20,7 @@ int main() {
   for(f1 = 0; f1 < PROCESSLIMIT; f1++) {
     processTable[f1].sp = 0xFF00;
     processTable[f1].running = 0;
-    processTable[f1].segment = 0;
+    processTable[f1].waiting = -1;
   }
   /* for (f1 = 0; f1 < PROCESSLIMIT; f1++) { */
   /*   printhex(processTable[f1].sp); */

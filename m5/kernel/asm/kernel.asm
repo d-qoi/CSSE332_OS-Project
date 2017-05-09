@@ -266,7 +266,7 @@ _initializeProgram:
         push    ax      ;di
         push    ax      ;bp
         push    ax      ;ax
-        mov     ax,bx
+        mov     ax,bx	;MOVING THE SEGMENT TO DS AND ES
         push    ax      ;ds
         push    ax      ;es
 

@@ -11,9 +11,6 @@
 #include "lib/string.h"
 #include "processing.h"
 
-void terminate(int proc) {
-  processTable[proc].running = 0;
-}
 
 void copyLenOut(int len, char *src, char *tgt) {
   while (len > 0) {
@@ -136,42 +133,3 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
   }
 }
 
-void handleTimerInterrupt(int segment, int sp) {
-  int i, temp, temp2;
-  temp = sp;
-  temp += 1;
-  /* println("Tic"); */
-  /* printHex(1etDataSegment()); */
-  /* println("\0"); */
-  /* printHex(getCodeSegment()); */
-  /* println("\0"); */
-  /* printHex(getStackSegment()); */
-  /* println("\0"); */
-  /* printHex(getEsegment()); */
-  /* println("\0"); */
-  /* printHex(segment); */
-  /* println("\0"); */
-  /* printHex(temp); */
-  /* println("\0"); */
-  if (segment == processTable[currentProcess].segment)
-    processTable[currentProcess].sp = sp;
-  for (i = currentProcess + 1; i < PROCESSLIMIT; i++) {
-    if (processTable[i].running) {
-      /* println("Dispatch"); */
-      sp = processTable[i].sp;
-      segment = (i + 2) * 0x1000;
-      currentProcess = i;
-      returnFromTimer(segment, sp);
-    }
-  }
-  for (i = 0; i < currentProcess + 1; i++) {
-    if (processTable[i].running) {
-      /* println("Dispatch"); */
-      sp = processTable[i].sp;
-      segment = (i + 2) * 0x1000;
-      currentProcess = i;
-      returnFromTimer(segment, sp);
-    }
-  }
-  returnFromTimer(segment, sp);
-}
