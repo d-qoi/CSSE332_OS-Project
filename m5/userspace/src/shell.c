@@ -128,7 +128,7 @@ int main() {
 	if (cmdBuff[15] != '/' || cmdBuff[16] < 'A') {
 	  puts("Invalid arguments to execute command\n");
 	} else {
-	  exec(&cmdBuff[8], 1);
+	  exec(&cmdBuff[15], 1);
 	}
       } else {
 	puts("Unknown command: ");

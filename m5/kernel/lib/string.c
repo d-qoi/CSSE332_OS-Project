@@ -75,7 +75,7 @@ int strlen(char *s) {
 int strcountchar(char * s, char c) {
   int count = 0;
   while(*s != '\0') {
-    if (*s1 == c)
+    if (*s == c)
       count++;
   }
   return count;
