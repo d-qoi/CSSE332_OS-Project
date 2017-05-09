@@ -50,7 +50,6 @@ _getFromMemory:
 
 ;int interrupt (int number, int AX, int BX, int CX, int DX)
 _interrupt:
-	cli
 	push bp
 	mov bp,sp
 	mov ax,[bp+4]	;get the interrupt number in AL
@@ -69,7 +68,6 @@ intr:	int #0x00	;call the interrupt (00 will be changed above)
 
 	mov ah,#0	;we only want AL returned
 	pop bp
-	sti
 	ret
 
 ;void makeInterrupt21()

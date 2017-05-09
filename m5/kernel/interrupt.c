@@ -134,8 +134,10 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
 
 void handleTimerInterrupt(int segment, int sp) {
   int i, temp, temp2;
+  temp = sp;
+  temp += 1;
   /* println("Tic"); */
-  /* printHex(getDataSegment()); */
+  /* printHex(1etDataSegment()); */
   /* println("\0"); */
   /* printHex(getCodeSegment()); */
   /* println("\0"); */
@@ -143,7 +145,12 @@ void handleTimerInterrupt(int segment, int sp) {
   /* println("\0"); */
   /* printHex(getEsegment()); */
   /* println("\0"); */
-  processTable[currentProcess].sp = sp;
+  /* printHex(segment); */
+  /* println("\0"); */
+  /* printHex(temp); */
+  /* println("\0"); */
+  if (segment == processTable[currentProcess].segment)
+    processTable[currentProcess].sp = sp;
   for (i = 0; i < PROCESSLIMIT; i++) {
     if (processTable[i].running) {
       /* println("Dispatch"); */

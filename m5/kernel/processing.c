@@ -31,7 +31,7 @@ int executeProgram(char *path, int segment) {
     putInMemory(segment, i, buffer[i]);
   }
 
-  launchProgram(segment);
+  initializeProgram(segment);
   return 0;
 }
 
