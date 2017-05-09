@@ -38,9 +38,12 @@ int executeProgram(char *path, int segment) {
 /* allocates a process if no segment is given */
 struct process *allocateProcess() {
   int i = 0;
+  println("allocation");
   for (i = 0; i < PROCESSLIMIT; i++) {
     if (processTable[i].segment == 0) {
+      printHex(i);
       processTable[i].segment = TOSEGMENT(i + 2);
+      printHex(processTable[i].segment);
       processTable[i].running = 1;
       return &processTable[i];
     }
