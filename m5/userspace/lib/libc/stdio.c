@@ -40,3 +40,10 @@ void fwrite(char *fname, char *buf) {
 void fdel(char *fname) {
   interrupt(0x21, 7, fname, 0, 0);
 }
+
+int __mkargv(int a, int b, int c, int d) {
+  puts(a + 30);
+  puts(b + 30);
+  puts(c + 30);
+  puts(d + 30);
+}

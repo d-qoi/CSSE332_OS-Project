@@ -5,9 +5,10 @@
  */
 #include <stdio.h>
 
-int main(int argc, char * argv[]) {
-	while(argc > 0) {
-		puts(argv[argc]);
-		argc--;
+int main(int a, char ** b) {
+	
+	while(a > 0) {
+		puts(a[b]);
+		a--;
 	}
 }

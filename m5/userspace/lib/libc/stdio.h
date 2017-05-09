@@ -16,4 +16,5 @@ void exit();
 void fread(char * fname, char * buf);
 void fwrite(char * fname, char * buf);
 void fdel(char * fname);
+int __mkargv(int a, int b, int c, int d);
 #endif
