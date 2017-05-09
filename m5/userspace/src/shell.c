@@ -107,7 +107,7 @@ int main() {
 	  len = strlen(temp);
 	  if (len == 2) {
 	    fwrite(&cmdBuff[7], fileBuff);
-	    /* exit(); */
+	    break;
 	  } else {
 	    for(i = 0; i < len; i++) {
 	      fileBuff[place++] = temp[i];
