@@ -19,6 +19,8 @@
   .global _getDataSegment
   .global _getCodeSegment
   .global _getStackSegment
+  .global _getExtraSegment
+  .global _setDataSegment
 
 ;void putInMemory (int segment, int address, char character)
 _putInMemory:
