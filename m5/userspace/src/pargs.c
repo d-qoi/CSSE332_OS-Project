@@ -6,7 +6,8 @@
 #include <stdio.h>
 
 int main(int a, char ** b) {
-	a = "1234";
+	a = "1234\0";
 	puts(a);
 	puts(b);
+
 }
