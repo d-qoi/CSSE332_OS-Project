@@ -13,6 +13,7 @@ void getDirList(char * fname, char * buff);
 void exec(char * fname);
 void exec(char * fname, int segment);
 void exit();
+void kill(int proc);
 void fread(char * fname, char * buf);
 void fwrite(char * fname, char * buf);
 void fdel(char * fname);

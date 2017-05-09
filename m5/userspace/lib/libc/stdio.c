@@ -29,6 +29,10 @@ void exit() {
   interrupt(0x21, 5, 0, 0, 0);
 }
 
+void kill(int proc) {
+  interrupt(0x21, 10, proc, 0, 0);
+}
+
 void fread(char *fname, char *buf) {
   interrupt(0x21, 3, fname, buf, 0);
 }

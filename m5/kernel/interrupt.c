@@ -11,8 +11,8 @@
 #include "lib/string.h"
 #include "processing.h"
 
-void terminate() {
-  processTable[currentProcess].running = 0;
+void terminate(int proc) {
+  processTable[proc].running = 0;
 }
 
 void copyLenOut(int len, char *src, char *tgt) {
@@ -34,7 +34,7 @@ void copyLenIn(int len, char *src, char *tgt) {
 }
 
 void handleInterrupt21(int ax, int bx, int cx, int dx) {
-  int f, bytesRead, len;
+  int f, bytesRead, len, num;
   char buffer[1024];
 
   switch (ax) {
@@ -85,7 +85,7 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
     break;
   case 5: /* Terminate current program. */
     setKernelDataSegment();
-    terminate();
+    terminate(currentProcess);
     break;
   case 6: /* Write a sector */
     writeSector((char *) bx, (char *) cx);
@@ -129,6 +129,10 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
 
     restoreDataSegment();
     break;
+  case 10:
+    setKernelDataSegment();
+    terminate(bx);
+    restoreDataSegment();
   }
 }
 

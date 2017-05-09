@@ -114,6 +114,12 @@ int main() {
 	    }
 	  }
 	}
+      } else if (!strncmp("kill", cmdBuff, 4)) {
+	if (cmdBuff[5] > 55 || cmdBuff[5] < 48) {
+	  puts("Invalid process number. Must be between 0 and 7");
+	} else {
+	  kill(cmdBuff[5] - 48);
+	}
       } else {
 	puts("Unknown command: ");
 	puts(cmdBuff);
