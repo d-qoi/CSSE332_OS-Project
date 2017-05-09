@@ -46,8 +46,9 @@ void fdel(char *fname) {
 }
 
 int __mkargv(int a, int b, int c, int d) {
-  puts(a + 30);
-  puts(b + 30);
-  puts(c + 30);
-  puts(d + 30);
+  puts(a);
+  puts(b);
+  puts(c);
+  puts(d);
+  while(1);
 }
