@@ -19,6 +19,8 @@
   .global _getDataSegment
   .global _getCodeSegment
   .global _getStackSegment
+  .global _getExtraSegment
+  .global _setDataSegment
 
 ;void putInMemory (int segment, int address, char character)
 _putInMemory:
@@ -309,9 +311,20 @@ _getStackSegment:
         mov ax, ss
         ret
 
-_getEsegment:
+_getExtraSegment:
         mov ax, es
         ret
+
+_setDataSegment:
+        push bp;
+        mov bp, sp;
+        
+        mov ax, [bp+4]
+        mov ds, ax
+        
+        pop bp;
+        ret
+
         
 ; int number, int* buffer
 ;_getStackFrame:

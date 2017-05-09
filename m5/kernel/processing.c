@@ -9,10 +9,10 @@
 #include "vfs.h"
 #include "fs/csse/csse.h"
 
-
 int executeProgram(char *path, char * args, int shouldWait) {
   char buffer[CSSE_MAX_FSIZE];
   int argc;
+
   int i, f, bytesRead;
   int newProc, segment;
 
@@ -48,6 +48,8 @@ int allocateProcess() {
   for (i = 0; i < PROCESSLIMIT; i++) {
     if (processTable[i].running == 0) {
       processTable[i].running = 1;
+      processTable[i].waiting = -1;
+      processTable[i].sp = 0xFF00;
       return i;
     }
   }
@@ -61,6 +63,7 @@ int getRunningSegment() {
 
 void clearWait(int proc) {
   int i;
+  println("Clearing wait");
   for (i = 0; i < PROCESSLIMIT; i++) {
     if (processTable[i].waiting == proc) {
       processTable[i].waiting = -1;
@@ -69,10 +72,11 @@ void clearWait(int proc) {
 }
 
 void terminate(int proc) {
+  println("terminating");
   processTable[proc].running = 0;
   processTable[proc].sp = 0xFF00;
   processTable[proc].waiting = -1;
-  clearWait(proc);
+  /* clearWait(proc); */
 }
 
 void handleTimerInterrupt(int segment, int sp) {
@@ -84,19 +88,21 @@ void handleTimerInterrupt(int segment, int sp) {
   }
   for (i = currentProcess + 1; i < PROCESSLIMIT; i++) {
     if (processTable[i].running && processTable[i].waiting == -1) {
-      /* println("Dispatch"); */
       sp = processTable[i].sp;
       segment = (i + 2) * 0x1000;
       currentProcess = i;
+      println("DA");
+      printHex(i);
       returnFromTimer(segment, sp);
     }
   }
   for (i = 0; i < currentProcess + 1; i++) {
     if (processTable[i].running  && processTable[i].waiting == -1) {
-      /* println("Dispatch"); */
       sp = processTable[i].sp;
       segment = (i + 2) * 0x1000;
       currentProcess = i;
+      println("DB");
+      printHex(i);
       returnFromTimer(segment, sp);
     }
   }
