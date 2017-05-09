@@ -13,7 +13,7 @@
 
 #define GRS getRunningSegment()
 
-int executeProgram(char *path, int segment);
+int executeProgram(char *path, int shouldWait);
 
 int allocateProcess();
 int getRunningSegment();

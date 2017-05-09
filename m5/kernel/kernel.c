@@ -60,6 +60,6 @@ int main() {
   */
   
   println("Starting shell:");
-  executeProgram("/bin/shell", 0x2000);
+  executeProgram("/bin/shell", 0);
   while(1);
 }
