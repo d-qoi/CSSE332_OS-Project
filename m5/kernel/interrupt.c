@@ -50,7 +50,7 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
     setKernelDataSegment();
     copyLenOut(len, (char *) bx, buffer);
     buffer[len] = 0;
-
+    println(buffer);
     f = fopen(buffer, 'r');
     if (f < 0) {
       println("Could not open file.");
@@ -73,10 +73,14 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
   case 4:
     /* Execute program at filename *bx, args *cx in segment dx*/
     len = strlen((char *) bx);
+    num = strlen((char *) cx);
 
     setKernelDataSegment();
+    copyLenOut(len, (char *) bx, buffer);
+    println("Program:\n\r");
+    println(buffer);
     copyLenOut(num, (char *) cx, buffer2); /* for arguments */
-    println("Args:");
+    println("Args:\n\r");
     println(buffer2);
     executeProgram(buffer, buffer2, dx);
 
