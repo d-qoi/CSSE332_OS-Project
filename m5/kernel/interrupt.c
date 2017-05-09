@@ -75,16 +75,10 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
     len = strlen((char *) bx);
 
     setKernelDataSegment();
-    copyLenOut(len, (char *) bx, buffer);
-<<<<<<< HEAD
     copyLenOut(num, (char *) cx, buffer2); /* for arguments */
     println("Args:");
     println(buffer2);
     executeProgram(buffer, buffer2, dx);
-=======
-
-    executeProgram(buffer, cx);
->>>>>>> origin/waiting
 
     restoreDataSegment();
     break;
