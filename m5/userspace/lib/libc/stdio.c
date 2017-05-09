@@ -17,8 +17,8 @@ void getDirList(char *fname, char *buff) {
   interrupt(0x21, 9, fname, buff, 0);
 }
 
-void exec(char *fname) {
-  interrupt(0x21, 4, fname, 0, 0);
+void exec(char *fname, int shouldWait) {
+  interrupt(0x21, 4, fname, shouldWait, 0);
 }
 
 void exec2(char *fname, int segment) {
@@ -26,12 +26,13 @@ void exec2(char *fname, int segment) {
 }
 
 void exit() {
-  interrupt(0x21, 5, 0, 0, 0);
+  interrupt(0x21, 11, 0, 0, 0);
 }
 
 void kill(int proc) {
   interrupt(0x21, 10, proc, 0, 0);
 }
+
 
 void fread(char *fname, char *buf) {
   interrupt(0x21, 3, fname, buf, 0);

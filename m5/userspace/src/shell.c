@@ -37,7 +37,11 @@ int main() {
 	puts(fileBuff);
 	/* exit(); */
       } else if(!strncmp("execute", cmdBuff, 7)) {
-	exec(&cmdBuff[8]);
+	if (cmdBuff[8] != '/' || cmdBuff[9] < 'A') {
+	  puts("Invalid arguments to execute command\n");
+	} else {
+	  exec(&cmdBuff[8], 0);
+	}
 	/* exit(); */
 	/*interrupt(0x21, 4, cmdBuff, 0x2000, 0);*/
 	
@@ -119,6 +123,12 @@ int main() {
 	  puts("Invalid process number. Must be between 0 and 7");
 	} else {
 	  kill(cmdBuff[5] - 48);
+	}
+	} else if (!strncmp("execforeground", cmdBuff, 14)) {
+	if (cmdBuff[15] != '/' || cmdBuff[16] < 'A') {
+	  puts("Invalid arguments to execute command\n");
+	} else {
+	  exec(&cmdBuff[8], 1);
 	}
       } else {
 	puts("Unknown command: ");
