@@ -15,6 +15,16 @@ int executeProgram(char *path, int shouldWait) {
   int i, f, bytesRead;
   int newProc, segment;
 
+  /* Read file and return if it failed. */
+  f = fopen(path, 'r');
+  bytesRead = fread(f, buffer, CSSE_MAX_FSIZE);
+  fclose(f);
+  if (!bytesRead || bytesRead == -1) {
+    println("Executable not found");
+    println("\0");
+    return -1;
+  }
+
   newProc = allocateProcess();
   if (shouldWait) {
     processTable[currentProcess].waiting = newProc;
@@ -22,14 +32,6 @@ int executeProgram(char *path, int shouldWait) {
 
 
   segment = TOSEGMENT(newProc + 2);
-
-  /* Read file and return if it failed. */
-  f = fopen(path, 'r');
-  bytesRead = fread(f, buffer, CSSE_MAX_FSIZE);
-  fclose(f);
-  if (!bytesRead)
-    return -1;
-
   for (i = 0; i < bytesRead; i++) {
     putInMemory(segment, i, buffer[i]);
   }
