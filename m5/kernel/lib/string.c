@@ -72,6 +72,15 @@ int strlen(char *s) {
   return i;
 }
 
+int strcountchar(char * s, char c) {
+  int count = 0;
+  while(*s != '\0') {
+    if (*s1 == c)
+      count++;
+  }
+  return count;
+}
+
 char strcmp(char * s1, char * s2) {
   while(*s1 != '\0'){
     if (*s1 != *s2)

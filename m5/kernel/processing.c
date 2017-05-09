@@ -10,8 +10,10 @@
 #include "fs/csse/csse.h"
 
 
-int executeProgram(char *path, int shouldWait) {
+int executeProgram(char *path, char *args, int shouldWait) {
   char buffer[CSSE_MAX_FSIZE];
+  char * argv[10];
+  int argc;
   int i, f, bytesRead;
   int newProc, segment;
 
@@ -27,6 +29,12 @@ int executeProgram(char *path, int shouldWait) {
   f = fopen(path, 'r');
   bytesRead = fread(f, buffer, CSSE_MAX_FSIZE);
   fclose(f);
+
+  argc = strcountchar(args, ' ');
+  if (argc > 0) {
+    
+  }
+
   if (!bytesRead)
     return -1;
 

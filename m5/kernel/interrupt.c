@@ -33,6 +33,7 @@ void copyLenIn(int len, char *src, char *tgt) {
 void handleInterrupt21(int ax, int bx, int cx, int dx) {
   int f, bytesRead, len, num;
   char buffer[1024];
+  char buffer2[257];
 
   switch (ax) {
   case 0: /* Print *bx as a string */
@@ -70,13 +71,17 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
     restoreDataSegment();
     break;
   case 4:
-    /* Execute program at filename *bx in segment cx*/
+    /* Execute program at filename *bx, args *cx in segment dx*/
     len = strlen((char *) bx);
+    num = 0;
+    if (cx != 0)
+      num = strlen((char *) cx);
+
     setKernelDataSegment();
-
     copyLenOut(len, (char *) bx, buffer);
+    copyLenOut(num, (char *) cx, buffer2); /* for arguments */
 
-    executeProgram(buffer, cx);
+    executeProgram(buffer, buffer2, dx);
 
     restoreDataSegment();
     break;

@@ -21,10 +21,6 @@ void exec(char *fname, int shouldWait) {
   interrupt(0x21, 4, fname, shouldWait, 0);
 }
 
-void exec2(char *fname, int segment) {
-  interrupt(0x21, 4, fname, segment, 0);
-}
-
 void exit() {
   interrupt(0x21, 11, 0, 0, 0);
 }
