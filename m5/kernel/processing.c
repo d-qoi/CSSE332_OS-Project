@@ -13,7 +13,7 @@
 int executeProgram(char *path, int shouldWait) {
   char buffer[CSSE_MAX_FSIZE];
   int i, f, bytesRead;
-  int newProc;
+  int newProc, segment;
 
   newProc = allocateProcess();
   if (shouldWait) {
