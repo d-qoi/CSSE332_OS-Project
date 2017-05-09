@@ -151,13 +151,22 @@ void handleTimerInterrupt(int segment, int sp) {
   /* println("\0"); */
   if (segment == processTable[currentProcess].segment)
     processTable[currentProcess].sp = sp;
-  for (i = 0; i < PROCESSLIMIT; i++) {
+  for (i = currentProcess + 1; i < PROCESSLIMIT; i++) {
     if (processTable[i].running) {
       /* println("Dispatch"); */
       sp = processTable[i].sp;
       segment = (i + 2) * 0x1000;
       currentProcess = i;
-      break;
+      returnFromTimer(segment, sp);
+    }
+  }
+  for (i = 0; i < currentProcess + 1; i++) {
+    if (processTable[i].running) {
+      /* println("Dispatch"); */
+      sp = processTable[i].sp;
+      segment = (i + 2) * 0x1000;
+      currentProcess = i;
+      returnFromTimer(segment, sp);
     }
   }
   returnFromTimer(segment, sp);
