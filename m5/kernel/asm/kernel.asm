@@ -309,9 +309,20 @@ _getStackSegment:
         mov ax, ss
         ret
 
-_getEsegment:
+_getExtraSegment:
         mov ax, es
         ret
+
+_setDataSegment:
+        push bp;
+        mov bp, sp;
+        
+        mov ax, [bp+4]
+        mov ds, ax
+        
+        pop bp;
+        ret
+
         
 ; int number, int* buffer
 ;_getStackFrame:
