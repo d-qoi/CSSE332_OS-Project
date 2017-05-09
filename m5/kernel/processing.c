@@ -31,7 +31,7 @@ int executeProgram(char *path, int segment) {
     putInMemory(segment, i, buffer[i]);
   }
 
-  initializeProgram(segment);
+  launchProgram(segment);
   return 0;
 }
 
@@ -92,9 +92,6 @@ struct process *getCurrentProcess() {
 
 /* get Running Segment */
 int getRunningSegment() {
-	int i;
-  for (i = 0; i < PROCESSLIMIT; i++)
-    if (processTable[i].running)
-      return processTable[i].segment;
+  return processTable[currentProcess].segment;
 }
 

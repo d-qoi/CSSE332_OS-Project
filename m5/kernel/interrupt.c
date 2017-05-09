@@ -134,26 +134,15 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
 
 void handleTimerInterrupt(int segment, int sp) {
   int i, temp, temp2;
-  println("Tic");
-  printHex(sp);
-  println("\0");
-  printHex(currentProcess);
-  println("\0");
   processTable[currentProcess].sp = sp;
   for (i = 0; i < PROCESSLIMIT; i++) {
     if (processTable[i].running) {
       println("Dispatch");
-      printHex(processTable[i].sp);
       sp = processTable[i].sp;
       segment = (i + 2) * 0x1000;
       currentProcess = i;
       break;
     }
   }
-  println("\0");
-  printHex(currentProcess);
-  printHex(segment);
-  printHex(sp);
-  println("\0");
   returnFromTimer(segment, sp);
 }
