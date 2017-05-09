@@ -40,7 +40,7 @@ int main() {
 	if (cmdBuff[8] != '/' || cmdBuff[9] < 'A') {
 	  puts("Invalid arguments to execute command\n");
 	} else {
-	  exec(&cmdBuff[8], 0);
+	  exec(&cmdBuff[8], &cmdBuff);
 	}
 	/* exit(); */
 	/*interrupt(0x21, 4, cmdBuff, 0x2000, 0);*/

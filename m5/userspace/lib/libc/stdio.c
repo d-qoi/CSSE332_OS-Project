@@ -42,6 +42,10 @@ void fdel(char *fname) {
   interrupt(0x21, 7, fname, 0, 0);
 }
 
+void getArgv(char * buffer) {
+  interrupt(0x21, 20, buffer, 0);
+}
+
 int __mkargv(int a, int b, int c, int d) {
   puts(a);
   puts(b);

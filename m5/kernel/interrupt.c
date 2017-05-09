@@ -80,7 +80,8 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
     setKernelDataSegment();
     copyLenOut(len, (char *) bx, buffer);
     copyLenOut(num, (char *) cx, buffer2); /* for arguments */
-
+    println("Args:");
+    println(buffer2);
     executeProgram(buffer, buffer2, dx);
 
     restoreDataSegment();
@@ -141,6 +142,11 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
     terminate(currentProcess);
     restoreDataSegment();
     break;
+  case 20:
+    setKernelDataSegment();
+    len = strlen(processTable[PROCESSLIMIT]);
+    copyLenIn(len, processTable[PROCESSLIMIT], (char *) bx);
+    restoreDataSegment();
   }
 }
 

@@ -10,7 +10,7 @@
 #include "fs/csse/csse.h"
 
 
-int executeProgram(char *path, char *args, int shouldWait) {
+int executeProgram(char *path, char * args, int shouldWait) {
   char buffer[CSSE_MAX_FSIZE];
   int argc;
   int i, f, bytesRead;
@@ -21,9 +21,6 @@ int executeProgram(char *path, char *args, int shouldWait) {
   bytesRead = fread(f, buffer, CSSE_MAX_FSIZE);
   fclose(f);
 
-  argc = strcountchar(args, ' ');
-  f = strlen(args);
-
   if (!bytesRead || bytesRead == -1) {
     println("Executable not found");
     println("\0");
@@ -31,6 +28,7 @@ int executeProgram(char *path, char *args, int shouldWait) {
   }
 
   newProc = allocateProcess();
+  memcpy(processTable[newProc].args, args, strlen(args));
   if (shouldWait) {
     processTable[currentProcess].waiting = newProc;
   }
@@ -38,10 +36,6 @@ int executeProgram(char *path, char *args, int shouldWait) {
   segment = TOSEGMENT(newProc + 2);
   for (i = 0; i < bytesRead; i++) {
     putInMemory(segment, i, buffer[i]);
-  }
-  f += i;
-  for (; i < f; i++) {
-    putInMemory(segment. i, args[])
   }
 
   initializeProgram(segment);
@@ -51,7 +45,6 @@ int executeProgram(char *path, char *args, int shouldWait) {
 /* allocates a process if no segment is given */
 int allocateProcess() {
   int i = 0;
-  println("allocation");
   for (i = 0; i < PROCESSLIMIT; i++) {
     if (processTable[i].running == 0) {
       processTable[i].running = 1;
