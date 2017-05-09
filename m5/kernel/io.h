@@ -34,7 +34,7 @@
 
 #define GET_CHAR interrupt(BIOS_READ_CHAR, 0, 0, 0, 0)
             
-void printHex(int value);
+void printHex(unsigned int value);
 
 void printString(char * string);
 

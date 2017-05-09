@@ -65,12 +65,13 @@ int csse_fopen(int openFileIndex) {
   memcpy(csse_newOpenFile->fname, newOpenFile->relPath + dnameLen, fnameLen);
 
   /* Load parent directory into dirBuffer. */
-  
+  setExtraSegmentToStackSegment();
   csse_newOpenFile->dirSector = csse_readDir(
     mountTable[newOpenFile->mountIndex].drive,
     csse_newOpenFile->dname,
     dirBuffer,
     0);
+  restoreExtraSegment();
 
   if (csse_newOpenFile->dirSector < 0){
     return -1; /* We had a problem reading the directory. */
@@ -79,10 +80,13 @@ int csse_fopen(int openFileIndex) {
   entryIndex = csse_findDirEntry(
     csse_newOpenFile->fname, 
     dirBuffer);
-
+  
+  /* If we cannot find the file, create one! */
   if (entryIndex < 0) {
+    println("Could not find file.");
     if (newOpenFile->mode != 'w')
       return -1;
+    /* Find free entry in the directory. */
     for (i = 0; i < 32; i++){
       if (dirBuffer[i*32] == 0)
         break;
@@ -91,13 +95,16 @@ int csse_fopen(int openFileIndex) {
       return -1;
     entryIndex = i;
     memcpy(dirBuffer + i*32, csse_newOpenFile->fname, 6);
+
+    setExtraSegmentToStackSegment();
     writeSectorTo(
       dirBuffer,
       mountTable[newOpenFile->mountIndex].drive, 
       csse_newOpenFile->dirSector);
+    restoreExtraSegment();
     memset(dirBuffer + i*32 + 6, 0, 26);
+
   }
-  
 
   /* Read sector list from directory. */
   memcpy(csse_newOpenFile->sectors, dirBuffer + entryIndex*32 + 6, 26);
@@ -250,10 +257,13 @@ int csse_openFileLoadNextSector(int csse_openFileIndex) {
   if (nextSector == 0x00)
     return -1; /* No more sectors jumping on the bed! */
 
+  setExtraSegmentToDataSegment();
   readSectorFrom(
     csse_openFileTable[csse_openFileIndex].loadedSectorBuffer, 
     mountTable[currOpenFile->mountIndex].drive,
     nextSector);
+  restoreExtraSegment();
+  
   csse_openFileTable[csse_openFileIndex].loadedSectorIndex = div(rwIndex, 512);
   csse_openFileTable[csse_openFileIndex].sectorWrites = 0;
   return 0;
@@ -274,11 +284,11 @@ int csse_openFileAssignNewSector(int drive, int dirSector, char * fname) {
   
   /*println("Generate sector!");*/
     
-  /* Read map. */
+  /* Read map and dir. */
+  setExtraSegmentToStackSegment();
   readSectorFrom(mapBuffer, drive, 1);
-
-  /* Read dir */
   readSectorFrom(dirBuffer, drive, dirSector);
+  restoreExtraSegment();
   
   dirEntry = csse_findDirEntry(fname, dirBuffer);
   if (dirEntry < 0)
@@ -304,11 +314,11 @@ int csse_openFileAssignNewSector(int drive, int dirSector, char * fname) {
   mapBuffer[newSector] = 0xFF;
   dirBuffer[dirEntry*32 + 6 + sectorSlot] = newSector;
   
-  /* Save map. */
+  /* Save map and dir. */
+  setExtraSegmentToStackSegment();
   writeSectorTo(mapBuffer, drive, 1);
-  
-  /* Save dir */
   writeSectorTo(dirBuffer, drive, dirSector);
+  restoreExtraSegment();
   
   return newSector;
 }
@@ -331,8 +341,10 @@ int csse_openFileWriteCurrSector(int csse_openFileIndex) {
 
   rwIndex = currOpenFile->readWriteIndex;
 
+  setExtraSegmentToDataSegment();
   writeSectorTo(csse_openFileTable[csse_openFileIndex].loadedSectorBuffer,
     mountTable[currOpenFile->mountIndex].drive, currSector);
+  restoreExtraSegment();
 
   return 0;
 }
@@ -352,7 +364,10 @@ int csse_listFilesInDir(int drive, char * dname, char * buffer) {
   char dir[512];
   int res, i, count = 0;
   
+  setExtraSegmentToStackSegment();
   res = csse_readDir(drive, dname, dir, 0);
+  restoreExtraSegment();
+  
   if (res < 0)
     return -1;
   memset(buffer, 0, 1024);
@@ -369,6 +384,7 @@ int csse_listFilesInDir(int drive, char * dname, char * buffer) {
 
 /*
  * Reads a directory sector from disk into a buffer based on path.
+ * the Extra segment must be already set appropriately.
  * 
  * disk: disk number to read from
  * dname: path of directory (must end in /)
@@ -501,7 +517,9 @@ int csse_fdel(int drive, char * path) {
   char dirBuffer[512], mapBuffer[512], fname[256], dname[256];
   
   /* Read map. */
+  setExtraSegmentToStackSegment();
   readSectorFrom(mapBuffer, drive, 1);
+  restoreExtraSegment();
   
   /* Split the relPath into dname and fname. */
   for (i = 0; i < 256; i++) {
@@ -518,11 +536,14 @@ int csse_fdel(int drive, char * path) {
   memcpy(fname, path + dnameLen, fnameLen);
 
   /* Load parent directory into dirBuffer. */
+  setExtraSegmentToStackSegment();
   dirSector = csse_readDir(
     drive,
     dname,
     dirBuffer,
     0);
+  restoreExtraSegment();
+  
   if (dirSector < 0){
     return -1; /* We had a problem reading the directory. */
   }
@@ -544,11 +565,11 @@ int csse_fdel(int drive, char * path) {
   
   dirBuffer[entryIndex*32] = 0;
   
-  /* Save map. */
+  /* Save map and dir. */
+  setExtraSegmentToStackSegment();
   writeSectorTo(mapBuffer, drive, 1);
-  
-  /* Save dir */
   writeSectorTo(dirBuffer, drive, dirSector);
+  restoreExtraSegment();
   
   return 0;
 }

@@ -14,8 +14,11 @@
 	.extern _handleTimerInterrupt
 	.global _returnFromTimer
 	.global _initializeProgram
-	.global _setKernelDataSegment
-	.global _restoreDataSegment
+	.global _setExtraSegmentToDataSegment
+  .global _setExtraSegmentToStackSegment
+	.global _restoreExtraSegment
+  .global _setDataSegmentToKernel
+  .global _restoreDataSegment
   .global _getDataSegment
   .global _getCodeSegment
   .global _getStackSegment
@@ -278,23 +281,48 @@ _initializeProgram:
 	pop	bp
         ret
 
-;void setKernelDataSegment()
-;sets the data segment to the kernel, saving the current ds on the stack
-_setKernelDataSegment:
+;void setExtraSegmentToStackSegment()
+;saves es to the stack and sets es to ss
+_setExtraSegmentToStackSegment:
         pop bx
-        push ds
         push es
         push bx
-        mov ax,#0x1000
-        mov ds,ax
+        mov ax,ss
         mov es,ax
         ret
 
-;void restoreDataSegment()
-;restores the data segment
-_restoreDataSegment:
+;void setExtraSegmentToDataSegment()
+;saves es to the stack and sets es to ds
+_setExtraSegmentToDataSegment:
+        pop bx
+        push es
+        push bx
+        mov ax,ds
+        mov es,ax
+        ret
+
+;void restoreExtraSegment()
+;restores es fom the stack
+_restoreExtraSegment:
         pop bx
         pop es
+        push bx
+        ret
+
+;void setDataSegmentToKernel()
+;saves ds to the stack and sets ds to 0x1000
+_setDataSegmentToKernel:
+        pop bx
+        push ds
+        push bx
+        mov ax,#0x1000
+        mov ds,ax
+        ret
+
+;void restoreDataSegment()
+;restores ds fom the stack
+_restoreDataSegment:
+        pop bx
         pop ds
         push bx
         ret

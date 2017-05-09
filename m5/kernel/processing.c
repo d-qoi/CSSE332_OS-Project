@@ -90,8 +90,8 @@ void handleTimerInterrupt(int segment, int sp) {
       sp = processTable[i].sp;
       segment = (i + 2) * 0x1000;
       currentProcess = i;
-      println("DA");
-      printHex(i);
+      /*println("DA");
+      printHex(i);*/
       returnFromTimer(segment, sp);
     }
   }
@@ -100,8 +100,8 @@ void handleTimerInterrupt(int segment, int sp) {
       sp = processTable[i].sp;
       segment = (i + 2) * 0x1000;
       currentProcess = i;
-      println("DB");
-      printHex(i);
+      /*println("DB");
+      printHex(i);*/
       returnFromTimer(segment, sp);
     }
   }

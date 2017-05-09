@@ -29,7 +29,7 @@ void printSegments() {
   setDataSegment(ds);
 }
 
-void printHex(int value) {
+void printHex(unsigned int value) {
   if (value >= 16) {
     int newVal = div(value, 16);
     printHex(newVal);
