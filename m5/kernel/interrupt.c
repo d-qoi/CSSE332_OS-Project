@@ -73,15 +73,11 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
   case 4:
     /* Execute program at filename *bx, args *cx in segment dx*/
     len = strlen((char *) bx);
-    num = 0;
-    if (cx != 0)
-      num = strlen((char *) cx);
 
     setKernelDataSegment();
     copyLenOut(len, (char *) bx, buffer);
-    copyLenOut(num, (char *) cx, buffer2); /* for arguments */
 
-    executeProgram(buffer, buffer2, dx);
+    executeProgram(buffer, cx);
 
     restoreDataSegment();
     break;

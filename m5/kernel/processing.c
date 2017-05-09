@@ -10,10 +10,8 @@
 #include "fs/csse/csse.h"
 
 
-int executeProgram(char *path, char *args, int shouldWait) {
+int executeProgram(char *path, int shouldWait) {
   char buffer[CSSE_MAX_FSIZE];
-  char * argv[10];
-  int argc;
   int i, f, bytesRead;
   int newProc, segment;
 
@@ -21,11 +19,6 @@ int executeProgram(char *path, char *args, int shouldWait) {
   f = fopen(path, 'r');
   bytesRead = fread(f, buffer, CSSE_MAX_FSIZE);
   fclose(f);
-
-  argc = strcountchar(args, ' ');
-  if (argc > 0) {
-    
-  }
   
   if (!bytesRead || bytesRead == -1) {
     println("Executable not found");
@@ -54,6 +47,8 @@ int allocateProcess() {
   for (i = 0; i < PROCESSLIMIT; i++) {
     if (processTable[i].running == 0) {
       processTable[i].running = 1;
+      processTable[i].waiting = -1;
+      processTable[i].sp = 0xFF00;
       return i;
     }
   }
