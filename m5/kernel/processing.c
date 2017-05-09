@@ -10,12 +10,15 @@
 #include "fs/csse/csse.h"
 
 
-int executeProgram(char *path, int segment) {
+int executeProgram(char *path, int shouldWait) {
   char buffer[CSSE_MAX_FSIZE];
   int i, f, bytesRead;
-  int newProc;
+  int newProc, segment;
 
   newProc = allocateProcess();
+  if (shouldWait) {
+    processTable[currentProcess].waiting = newProc;
+  }
 
 
   segment = TOSEGMENT(newProc + 2);
@@ -45,7 +48,7 @@ int allocateProcess() {
       return i;
     }
   }
-  return 0;
+  return -1;
 }
 
 /* get Running Segment */

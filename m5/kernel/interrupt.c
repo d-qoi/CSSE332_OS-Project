@@ -130,6 +130,12 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
     setKernelDataSegment();
     terminate(bx);
     restoreDataSegment();
+    break;
+  case 11:
+    setKernelDataSegment();
+    terminate(currentProcess);
+    restoreDataSegment();
+    break;
   }
 }
 
