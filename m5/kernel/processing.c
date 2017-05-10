@@ -90,8 +90,7 @@ struct process getRunningProcess() {
 void passArgsOfCurrent(char * buffer) {
   int len = 0;
   KDS
-  len = strlen(processTable[currentProcess].args);
-  memcpyKS(buffer, processTable[currentProcess].args, len);
+  memcpyKS(buffer, processTable[currentProcess].args, 256);
   SDS
 }
 

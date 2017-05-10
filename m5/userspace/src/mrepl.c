@@ -14,10 +14,7 @@ int main() {
   enableInterrupts();
 
   while(1) {
-    for(i = 0; i < 256; i++) {
-      cmdBuff[i] = '\0';
-    }
-    cmdBuff[0] = 0;
+    memset(cmdBuff, '\0', 256);
 
     puts("0xG01: ");
     gets(cmdBuff);
@@ -38,6 +35,9 @@ int main() {
     if (cmdBuff[i] == '\0') { /* if the command has no args and no spaces */
       strcat(cmd, cmdBuff);
     }
+    puts(cmd);
+    puts("\n\r\0");
+    puts(cmdBuff);
     k = 1;
     for(i = 0; i < 256; i++) {
       if (cmdBuff[i] == '&') {

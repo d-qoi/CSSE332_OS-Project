@@ -12,6 +12,8 @@ int main() {
   int len, i, place = 0;;
 
   getArgs(args);
+  puts(args);
+  puts("\n\r");
   while(*arg1 != '\0') {
     if (*arg1 == ' ') {
       arg1++;
@@ -27,7 +29,8 @@ int main() {
     }
     arg2++;
   }
-  if (arg1[0] == "/" && arg1[1] >= 'A') {
+  puts(arg1);
+  if (arg1[0] == '/' && arg1[1] >= 'A') {
     while(1) {
       gets(temp);
       len = strlen(temp);
