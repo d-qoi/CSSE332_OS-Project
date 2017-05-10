@@ -19,7 +19,7 @@ int main() {
     }
     cmdBuff[0] = 0;
 
-    puts("0xG00: ");
+    puts("0xG01: ");
     gets(cmdBuff);
     removeLinefeed(cmdBuff);
 
@@ -51,9 +51,6 @@ int main() {
     }
     if (k) {
       puts("running in forground\n\r\0");
-    }
-    if (strncmp(cmd, "/bin/exit", 9)) {
-      exit();
     }
     exec(cmd, cmdBuff, k);
   }
