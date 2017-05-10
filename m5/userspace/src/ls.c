@@ -12,11 +12,8 @@ int main() {
   char files[13056];
   int i, len;
 
-  puts("gets args\n\n");
   getArgs(args);
-  puts("\n\n\r\0");
-  puts(args);
-  puts("\n\n\r\0");
+
   arg1 = args;
   while(*arg1 != '\0') {
     if (*arg1 == ' ') {

@@ -19,7 +19,7 @@ int main() {
     }
     cmdBuff[0] = 0;
 
-    puts("0xG00: ");
+    puts("0xG01: ");
     gets(cmdBuff);
     removeLinefeed(cmdBuff);
 
@@ -38,10 +38,6 @@ int main() {
     if (cmdBuff[i] == '\0') { /* if the command has no args and no spaces */
       strcat(cmd, cmdBuff);
     }
-    puts(cmdBuff);
-    puts("\n\r");
-    puts(cmd);
-    puts("\n\r");
     k = 1;
     for(i = 0; i < 256; i++) {
       if (cmdBuff[i] == '&') {
@@ -49,12 +45,7 @@ int main() {
         break;
       }
     }
-    if (k) {
-      puts("running in forground\n\r\0");
-    }
-    if (strncmp(cmd, "/bin/exit", 9)) {
-      exit();
-    }
+
     exec(cmd, cmdBuff, k);
   }
 }

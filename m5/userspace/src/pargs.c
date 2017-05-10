@@ -7,6 +7,7 @@
 
 int main() {
 	char argv[256];
+  puts("This is pargs");
 	puts("\n\r\0");
 	getArgs(argv);
 	puts(argv);
