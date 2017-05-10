@@ -45,6 +45,11 @@ int executeProgram(char *path, char * args, int shouldWait) {
   }
 
   initializeProgram(segment);
+  
+  KDS
+  if (shouldWait)
+    while(processTable[currentProcess].waiting > 0);
+  SDS
   return 0;
 }
 
@@ -74,10 +79,24 @@ int getRunningSegment() {
   return seg;
 }
 
+struct process getRunningProcess() {
+  struct process proc;
+  KDS
+  proc = processTable[currentProcess];
+  SDS
+  return proc;
+}
+
+void passArgsOfCurrent(char * buffer) {
+  int len = 0;
+  KDS
+  memcpyKS(buffer, processTable[currentProcess].args, 256);
+  SDS
+}
+
 void clearWait(int proc) {
   int i;
   KDS
-  println("Clearing wait");
   for (i = 0; i < PROCESSLIMIT; i++) {
     if (processTable[i].waiting == proc) {
       processTable[i].waiting = -1;

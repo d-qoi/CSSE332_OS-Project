@@ -41,6 +41,15 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
   
     case 4:
       /* Execute program at filename *bx, args *cx*/
+      /*
+      println((char *) bx);
+      PRINT_CHAR('\n');
+      PRINT_CHAR('\r');
+      println((char *) cx);
+      PRINT_CHAR('\n');
+      PRINT_CHAR('\r');
+      */
+      
       executeProgram((char *) bx, (char *) cx, (int) dx);
       break;
 
@@ -93,9 +102,11 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
       
     
     case 20:
-      KDS
-      bytesRead = strlen(processTable[currentProcess].args);
-      memcpyKS((char *) bx, processTable[currentProcess].args, bytesRead);
+      passArgsOfCurrent(bx);      
+      break;
+
+    case 21:
+      PRINT_CHAR(currentProcess + 0x30);
       break;
   }
   SDS

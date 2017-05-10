@@ -1,5 +1,5 @@
 /*
-  Milestone 3 userspace/lib/libc/stdio.h
+  Milestone 5 userspace/lib/libc/stdio.h
   Group 3-C
   David Mehl, Christian Balcom, and Alexander Hirschfeld
  */
@@ -13,8 +13,10 @@ void getDirList(char * fname, char * buff);
 void exec(char * fname, int shouldWait);
 void exit();
 void kill(int proc);
-void fread(char * fname, char * buf);
+int fread(char * fname, char * buf);
 void fwrite(char * fname, char * buf);
 void fdel(char * fname);
+void printpid();
+void getArgs(char * buffer);
 int __mkargv(int a, int b, int c, int d);
 #endif
