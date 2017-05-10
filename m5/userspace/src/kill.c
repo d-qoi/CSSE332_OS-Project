@@ -1,13 +1,15 @@
 /*
-  userspace/src/ls.c
+  userspace/src/kill.c
   Group 3-C
   David Mehl, Christian Balcom, and Alexander Hirschfeld
 */
 
 #include <stdio.h>
+#include <string.h>
 
 int main() {
-  char args[256], * arg2, * arg1;
+  char args[256], *arg1;
+  int target;
 
   getArgs(args);
   arg1 = args;
@@ -18,17 +20,12 @@ int main() {
     }
     arg1++;
   }
-  arg2 = arg1;
-  while(*arg2 != '\0') {
-    if (*arg2 == ' ') {
-      arg2 = '\0';
-      break;
-    }
-    arg2++;
+  target = *arg1 - 0x30;
+
+  if (target > 0 && target < 8) {
+  	kill(target);
+  } else {
+  	puts("Invalid process number. Must be between 0 and 7\n\r\0");
   }
-  puts("Deleting: ");
-  puts(arg1);
-  puts("\n\r\0");
-  fdel(arg1);
   exit();
 }

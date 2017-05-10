@@ -22,14 +22,14 @@ int main() {
       if (args[i] == ' ' && args[i + 1] == '/') {
         j = 1;
         arg1 = &args[i + 1];
-        args[i] = '\0'
+        args[i] = '\0';
       }
       break;
     case 1:
       if (args[i] == ' ' && args[i + 1] == '/') {
         j = 2;
         arg2 = &args[i + 1];
-        args[i] = '\0'
+        args[i] = '\0';
       }
       break;
     case 2:
@@ -49,12 +49,16 @@ int main() {
     puts("Unable to open: ");
     puts(arg1);
     puts("\n\r\0");
+    fclose(fp1);
+    fclose(fp2);
     return;
   }
   if (fp2 < 0) {
     puts("Unable to open: ");
     puts(arg2);
     puts("\n\r\0");
+    fclose(fp1);
+    fclose(fp2);
     return;
   }
 
@@ -63,6 +67,8 @@ int main() {
     bytes = fread(fp1, buffer, bytes);
     fwrite(fp2, buffer, bytes);
   }
-
+  fclose(fp1);
+  fclose(fp2);
+  exit();
 }
 

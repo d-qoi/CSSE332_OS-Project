@@ -74,6 +74,22 @@ int getRunningSegment() {
   return seg;
 }
 
+struct process getRunningProcess() {
+  struct process proc;
+  KDS
+  proc = processTable[currentProcess];
+  SDS
+  return proc;
+}
+
+void passArgsOfCurrent(char * buffer) {
+  int len = 0;
+  KDS
+  len = strlen(processTable[currentProcess].args);
+  memcpyKS(processTable[currentProcess].args, buffer, len);
+  SDS
+}
+
 void clearWait(int proc) {
   int i;
   KDS

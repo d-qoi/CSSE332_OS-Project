@@ -19,6 +19,8 @@ int executeProgram(char *path, char *args, int shouldWait);
 
 int allocateProcess();
 int getRunningSegment();
+struct process getRunningProcess();
+void passArgsOfCurrent(char * buffer);
 void terminate(int proc);
 void clearWait(int proc);
 void handleTimerInterrupt(int segment, int sp);

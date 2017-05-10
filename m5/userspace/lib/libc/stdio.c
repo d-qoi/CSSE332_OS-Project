@@ -69,8 +69,12 @@ int fclose(int fid) {
   return ret;
 }
 
-void getArgv(char * buffer) {
+void getArgs(char * buffer) {
   interrupt(0x21, 20, buffer, 0);
+}
+
+void printpid() {
+  interrupt(0x21, 21, 0, 0);
 }
 
 int __mkargv(int a, int b, int c, int d) {

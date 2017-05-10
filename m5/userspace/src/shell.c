@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#define HARDCODE 0
+#define HARDCODE 1
 
 int main() {
   char cmdBuff[256], pathBuff[512], fileBuff[13000], temp[256];
@@ -153,26 +153,7 @@ int main() {
         /* exit(); */
       }
     } else {
-      char cmd[256];
-      memset(cmd, '\0', 256);
-      memcpy(cmd, "/bin/", 5);
-      i = 0;
-      while(cmdBuff[i] != '\0' && i < 256) { /* if the command has args, or spaces at the end */
-        if (cmdBuff[i] == ' ') {
-          cmdBuff[i] = '\0';
-          strcat(cmd, cmdBuff);
-          cmdBuff[i] = ' ';
-          break;
-        }
-        i++;
-      }
-      if (cmdBuff[i] == '\0') { /* if the command has no args and no spaces */
-        strcat(cmd, cmdBuff);
-      }
-      puts(cmdBuff);
-      puts("\n\r");
-      puts(cmd);
-      puts("\n\r");
+
     }
   }
 }

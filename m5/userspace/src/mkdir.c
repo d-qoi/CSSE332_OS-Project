@@ -1,5 +1,5 @@
 /*
-  userspace/src/cat.c
+  userspace/src/mkdir.c
   Group 3-C
   David Mehl, Christian Balcom, and Alexander Hirschfeld
 */
@@ -8,9 +8,10 @@
 #include <string.h>
 
 int main() {
-  char args[256], file[13056];
-  char * arg1, * arg2;
-  int fp;
+  char args[256];
+  char * arg2;
+  char * arg1;
+  int len;
 
   getArgs(args);
   arg1 = args;
@@ -30,16 +31,13 @@ int main() {
     arg2++;
   }
 
-  fp = fopen(arg1,'r');
-  if (fp < 0) {
-    puts("Unable to open file: ");
+  len = strlen(arg1);
+  if (len != 0 && *(arg2-1) == '/')
+    fmkdir(arg1);
+  else {
+    puts("Unable to make file: ");
     puts(arg1);
     puts("\n\r\0");
-  } else {
-    fread(fp, file, sizeof(file));
-    puts(file);
-    puts("\n\r\0");
   }
-  fclose(fp);
   exit();
 }

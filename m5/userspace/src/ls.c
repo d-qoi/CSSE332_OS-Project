@@ -8,19 +8,24 @@
 #include <string.h>
 
 int main() {
-  char args[256], * arg2;
+  char args[256], * arg2, *arg1;
   char files[13056];
   int i, len;
 
+  puts("gets args\n\n");
   getArgs(args);
-  while(*args != '\0') {
-    if (*args == ' ') {
-      args++;
+  puts("\n\n\r\0");
+  puts(args);
+  puts("\n\n\r\0");
+  arg1 = args;
+  while(*arg1 != '\0') {
+    if (*arg1 == ' ') {
+      arg1++;
       break;
     }
-    args++;
+    arg1++;
   }
-  arg2 = args;
+  arg2 = arg1;
   while(*arg2 != '\0') {
     if (*arg2 == ' ') {
       arg2 = '\0';
@@ -28,10 +33,10 @@ int main() {
     }
     arg2++;
   }
-  puts("Directory List for: ")
-  puts(args);
+  puts("Directory List for: ");
+  puts(arg1);
   puts("\n\r\0");
-  getDirList(args, files);
+  getDirList(arg1, files);
   for(i = 0; i < 50; i++) {
     len = strlen(&files[i * 256]);
     if (len == 0) {
@@ -41,4 +46,5 @@ int main() {
       puts("\n\r\0");
     }
   }
+  exit();
 }
