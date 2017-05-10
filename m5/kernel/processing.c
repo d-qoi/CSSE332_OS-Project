@@ -31,7 +31,6 @@ int executeProgram(char *path, char * args, int shouldWait) {
   newProc = allocateProcess();
   KDS
   memcpySK(processTable[newProc].args, args, 256);
-  println(processTable[newProc].args);
   SDS
   
   if (shouldWait) {
@@ -89,12 +88,16 @@ void clearWait(int proc) {
 
 void terminate(int proc) {
   KDS
-  println("terminating");
-  printHex(proc);
+  if (proc < 0)
+    proc = currentProcess;
   processTable[proc].running = 0;
   processTable[proc].sp = 0xFF00;
   processTable[proc].waiting = -1;
   /* clearWait(proc); */
+  
+  if (proc == currentProcess){
+    while(1); /* Don't let it return. */
+  }
   SDS
 }
 

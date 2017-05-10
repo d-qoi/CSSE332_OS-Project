@@ -145,3 +145,19 @@ void writeSectorTo(char * buffer, int drive, int sector) {
           MOVE_H(track) + relSector,             \
           MOVE_H(head) + drive);
 }
+
+void readBlockFrom(char * buffer, int drive, int block) {
+  int relSector, head, track, sector;
+  
+  sector = block*2;
+  
+  relSector = mod(sector, 18) + 1;
+  
+  head = mod(div(sector, 18), 2);
+  
+  track = div(sector, 36);
+  
+  interrupt(BIOS_DISK_INTERACT, MOVE_H(DISK_READ) + 2, buffer,        \
+          MOVE_H(track) + relSector,             \
+          MOVE_H(head) + drive);
+}

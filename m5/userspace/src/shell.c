@@ -40,7 +40,7 @@ int main() {
         if (cmdBuff[8] != '/' || cmdBuff[9] < 'A') {
           puts("Invalid arguments to execute command\n\r");
         } else {
-          exec(&cmdBuff[8], cmdBuff);
+          exec(&cmdBuff[8], cmdBuff, 0);
         }
         /* exit(); */
         /*interrupt(0x21, 4, cmdBuff, 0x2000, 0);*/
@@ -132,7 +132,7 @@ int main() {
         if (cmdBuff[15] != '/' || cmdBuff[16] < 'A') {
           puts("Invalid arguments to execute command\n\r");
         } else {
-          exec(&cmdBuff[15], 1);
+          exec(&cmdBuff[15], cmdBuff, 1);
         }
       } else if (!strncmp("mkdir", cmdBuff, 3)) {
         if (cmdBuff[6] != '/') {
