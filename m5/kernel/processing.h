@@ -13,7 +13,7 @@
 
 #define GRS getRunningSegment()
 
-int executeProgram(char *path, int shouldWait);
+int executeProgram(char *path, char *args, int shouldWait);
 
 int allocateProcess();
 int getRunningSegment();
@@ -26,6 +26,7 @@ struct process {
   char running;
   int waiting;
   char name[PROCESSNAMELIMIT];
+  char args[256];
 };
 
 struct process processTable[PROCESSLIMIT];

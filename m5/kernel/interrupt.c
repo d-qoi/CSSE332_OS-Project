@@ -39,8 +39,8 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
       break;
   
     case 4:
-      /* Execute program at filename *bx, args *cx in segment dx*/
-      executeProgram((char *) bx, (char *) cx);
+      /* Execute program at filename *bx, args *cx*/
+      executeProgram((char *) bx, (char *) cx, dx);
       break;
 
     case 5: /* Terminate current program. */
@@ -71,8 +71,17 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
       break;
 
     case 11:
-      terminate(currentProcess);
+      KDS
+      bx = currentProcess;
+      SDS
+      terminate(bx);
       while(1); /* Don't let it return. */
+      break;
+    
+    case 20:
+      KDS
+      bytesRead = strlen(processTable[currentProcess].args);
+      memcpyKS((char *) bx, processTable[currentProcess].args, bytesRead);
       break;
   }
   SDS

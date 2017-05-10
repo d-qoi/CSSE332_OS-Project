@@ -5,9 +5,10 @@
  */
 #include <stdio.h>
 
-int main(int a, char ** b) {
-	a = "1234\0";
-	puts(a);
-	puts(b);
+int main() {
+	char * argv;
+	puts('\0');
+	getArgv(argv);
+	puts(argv);
 	exit();
 }

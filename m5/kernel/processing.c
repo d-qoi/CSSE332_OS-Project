@@ -10,17 +10,16 @@
 #include "vfs.h"
 #include "fs/csse/csse.h"
 
-
-int executeProgram(char *path, int shouldWait) {
+int executeProgram(char *path, char * args, int shouldWait) {
   char buffer[CSSE_MAX_FSIZE];
+  int argc;
+
   int i, f, bytesRead;
   int newProc, segment;
 
   f = fopen(path, 'r');
   bytesRead = fread(f, buffer, CSSE_MAX_FSIZE);
   fclose(f);
-  
-
   
   if (bytesRead <= 0) {
     KDS
@@ -30,6 +29,11 @@ int executeProgram(char *path, int shouldWait) {
   }
 
   newProc = allocateProcess();
+  KDS
+  memcpySK(processTable[newProc].args, args, 256);
+  println(processTable[newProc].args);
+  SDS
+  
   if (shouldWait) {
     KDS
     processTable[currentProcess].waiting = newProc;
@@ -50,7 +54,6 @@ int executeProgram(char *path, int shouldWait) {
 int allocateProcess() {
   int i = 0;
   KDS
-  println("allocation");
   for (i = 0; i < PROCESSLIMIT; i++) {
     if (processTable[i].running == 0) {
       processTable[i].running = 1;
@@ -97,7 +100,7 @@ void terminate(int proc) {
 }
 
 void handleTimerInterrupt(int segment, int sp) {
-  int i, startSegment=segment, startSp=sp;
+  int i;
 
   if (TOSEGMENT(currentProcess + 2) == segment){
     processTable[currentProcess].sp = sp;
@@ -105,6 +108,7 @@ void handleTimerInterrupt(int segment, int sp) {
   if (processTable[currentProcess].running == 0) {
     clearWait(currentProcess);
   }
+
   for (i = 1; i <= PROCESSLIMIT; i++) {
     int pi = mod(currentProcess + i, PROCESSLIMIT);
     if (processTable[pi].running && processTable[pi].waiting == -1) {
@@ -119,11 +123,6 @@ void handleTimerInterrupt(int segment, int sp) {
       /*println("DA");
       printHex(i);*/
     }
-  }
-  if (segment != startSegment){
-    println("Segment change!");
-    printHex(segment); println("");
-    printHex(sp); println("");
   }
     
   returnFromTimer(segment, sp);
