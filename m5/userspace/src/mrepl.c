@@ -45,7 +45,6 @@ int main() {
         break;
       }
     }
-
     exec(cmd, cmdBuff, k);
   }
 }
