@@ -4,6 +4,8 @@
   David Mehl, Christian Balcom, and Alexander Hirschfeld
  */
 
+#ifndef _PROCESSING_H_
+#define _PROCESSING_H_
 
 #define PROCESSNAMELIMIT 15
 #define PROCESSLIMIT 32
@@ -33,3 +35,4 @@ struct process processTable[PROCESSLIMIT];
 
 int currentProcess = 0;
 
+#endif

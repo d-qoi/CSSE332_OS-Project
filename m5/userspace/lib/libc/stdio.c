@@ -16,8 +16,8 @@ void getDirList(char *fname, char *buff) {
   interrupt(0x21, 9, fname, buff, 0);
 }
 
-void exec(char *fname, char * args) {
-  interrupt(0x21, 4, fname, args, 0);
+void exec(char *fname, char * args, int waiting) {
+  interrupt(0x21, 4, fname, args, waiting);
 }
 
 void exit() {

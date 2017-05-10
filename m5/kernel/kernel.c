@@ -14,8 +14,8 @@
 
 int main() {
   char buffer[CSSE_MAX_FSIZE];  /* this is the maximum size of a file */
-  int f1, f2, res;
-  char * message = "This is a very interesting message!\n\r";
+  int f1, f2, res;  
+  
   println("Initializing Kernel.");
   for(f1 = 0; f1 < PROCESSLIMIT; f1++) {
     processTable[f1].sp = 0xFF00;
