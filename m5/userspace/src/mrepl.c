@@ -8,10 +8,21 @@
 #include <string.h>
 
 int main() {
+  char cmd[256], cmdBuff[256];
+  int i;
+  int k;
+  enableInterrupts();
+
   while(1) {
-    char cmd[256], cmdBuff[256];
-    int i;
-    int k;
+    for(i = 0; i < 256; i++) {
+      cmdBuff[i] = '\0';
+    }
+    cmdBuff[0] = 0;
+
+    puts("0xG00: ");
+    gets(cmdBuff);
+    removeLinefeed(cmdBuff);
+
     memset(cmd, '\0', 256);
     memcpy(cmd, "/bin/", 5);
     i = 0;

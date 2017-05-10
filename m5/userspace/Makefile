@@ -4,7 +4,7 @@
 
 CFLAGS = -ansi -c -Ilib/libc
 
-all: bin/shell bin/type bin/pargs bin/cat bin/cp bin/create bin/gitpid bin/kill bin/ls bin/mkdir bin/rm
+all: bin/shell bin/type bin/pargs bin/cat bin/cp bin/create bin/gitpid bin/kill bin/ls bin/mkdir bin/rm bin/mrepl
 
 bin/type: src/type.o lib/libc/stdio.o lib/libc/string.o lib/lib_asm.o
 	ld86 -o bin/type -d src/type.o lib/libc/stdio.o lib/libc/string.o lib/lib_asm.o
@@ -62,3 +62,4 @@ lib/lib_asm.o: lib/lib.asm
 
 clean: 
 	rm -rf lib/libc/*.o src/*.o bin/shell bin/type bin/pargs bin/cat bin/cp bin/create bin/gitpid bin/kill bin/ls bin/mkdir bin/rm
+	rm bin/mrepl
