@@ -29,11 +29,12 @@ int executeProgram(char *path, char * args, int shouldWait) {
   }
 
   newProc = allocateProcess();
-  KDS
+  KDS /* kernel data segment */
   memcpySK(processTable[newProc].args, args, 256);
-  SDS
+  SDS /* stack data segment */
   
   if (shouldWait) {
+    
     KDS
     processTable[currentProcess].waiting = newProc;
     SDS
