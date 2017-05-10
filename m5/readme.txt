@@ -45,8 +45,8 @@ Commands Available:
 	   program. Be sure to include the correct
 	   directory information to access the
 	   executable. For example:
-	   'execute /bin/tstpr2' will execute
-	   the program 'tstpr2' in the directory
+	   'execute /bin/phello' will execute
+	   the program 'phello' in the directory
 	   /bin/
 
 'delete': This command will delete the desired file.
@@ -72,6 +72,24 @@ Commands Available:
 	  the user enters up until they enter a blank
 	  line of text. In this case, m will be in the
 	  root directory
+
+'kill':	  This command will kill the given process. For
+	  example, 'kill 1' will kill process 1, which is
+	  the first process spawned by the shell using
+	  execute or execforeground. Be aware that killing
+	  process 0 will kill the original shell and
+	  should be avoided as behavior after killing
+	  process 0 is not determined or guaranteed
+
+'execforeground': This command will run a given executable
+		 in the foreground and will cause the
+		 calling process to wait after the calling
+		 process is interrupted by the timer. For
+		 example, 'execforeground /bin/shell' will
+		 create a new shell. Be aware that the current
+		 shell might print it's prompt before being
+		 put into waiting status, so upon return the
+		 prompt will not be reprinted
 
 If incorrect arguments are supplied, typically the response
 of the shell will be 'Invalid arguments to ### command' where
