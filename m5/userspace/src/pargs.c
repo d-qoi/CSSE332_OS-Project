@@ -7,7 +7,7 @@
 
 int main() {
 	char * argv;
-	puts('\0');
+	puts("\0");
 	getArgv(argv);
 	puts(argv);
 	exit();

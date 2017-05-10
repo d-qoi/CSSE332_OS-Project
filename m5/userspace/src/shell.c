@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#define HARDCODE 1
+#define HARDCODE 0
 
 int main() {
   char cmdBuff[256], pathBuff[512], fileBuff[13000], temp[256];
@@ -16,7 +16,7 @@ int main() {
   enableInterrupts();
   while(1) {
     for(i = 0; i < 256; i++) {
-      cmdBuff[i] = 0;
+      cmdBuff[i] = '\0';
     }
     cmdBuff[0] = 0;
     pathBuff[0] = 0;
@@ -153,31 +153,26 @@ int main() {
         /* exit(); */
       }
     } else {
-      getDirList("/bin", pathBuff);
-      for (i = 0; i < 16; i++) {
-        equals = 1;
-        for (j = 0; j < 6; j++) {
-          if (cmdBuff[j] != pathBuff[i * 6 + j]) {
-            equals = 0;
-            break;
-          }
+      char cmd[256];
+      memset(cmd, '\0', 256);
+      memcpy(cmd, "/bin/", 5);
+      i = 0;
+      while(cmdBuff[i] != '\0' && i < 256) { /* if the command has args, or spaces at the end */
+        if (cmdBuff[i] == ' ') {
+          cmdBuff[i] = '\0';
+          strcat(cmd, cmdBuff);
+          cmdBuff[i] = ' ';
+          break;
         }
-        if (equals) {
-          char cmd[16], args[16];
-          memset(cmd, 0, 16);
-          memset(args, 0, 16);
-          strcat(cmd, "/bin/");
-          memcpy(cmd + 5, cmdBuff, 6);
-          memcpy(args, cmdBuff + 6);
-          puts(args);
-          exec(cmd);
-        }
+        i++;
       }
-      puts("Unknown command: ");
+      if (cmdBuff[i] == '\0') { /* if the command has no args and no spaces */
+        strcat(cmd, cmdBuff);
+      }
       puts(cmdBuff);
       puts("\n\r");
-
-      /* exit(); */
+      puts(cmd);
+      puts("\n\r");
     }
   }
 }
