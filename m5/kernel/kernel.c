@@ -61,6 +61,6 @@ int main() {
   */
   
   println("Starting shell:");
-  executeProgram("/bin/mrepl", "\0", 0);
+  executeProgram("/bin/shell", "\0", 0);
   while(1);
 }
