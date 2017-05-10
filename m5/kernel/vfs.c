@@ -128,6 +128,8 @@ int freaddir(char * path, char * buffer) {
   
   mountIndex = findMountAndRelPath(path, relPath);
   if (mountIndex < 0) {
+    println("Invalid mount.");
+    buffer[0] = '\0';
     return -1;  /* Could not find mount. */
   }
   
@@ -135,9 +137,33 @@ int freaddir(char * path, char * buffer) {
   fsType = mountTable[mountIndex].fsType;
   drive = mountTable[mountIndex].drive;
   SDS
-  
+
   if (fsType == FS_CSSE)
     return csse_listFilesInDir(drive, relPath, buffer);
+  println("Invalid FS type.");
+  return -1; /* Invalid fs type */
+}
+
+int fmkdir(char * path) {
+  int mountIndex, fsType, drive;
+  char relPath[256];
+  char dirBuffer[512];
+  
+  mountIndex = findMountAndRelPath(path, relPath);
+  if (mountIndex < 0) {
+    println("Invalid mount.");
+    return -1;  /* Could not find mount. */
+  }
+  
+  KDS
+  fsType = mountTable[mountIndex].fsType;
+  drive = mountTable[mountIndex].drive;
+  println(relPath);
+  SDS
+
+  if (fsType == FS_CSSE)
+    return csse_readDir(drive, relPath, dirBuffer, 1);
+  println("Invalid FS type.");
   return -1; /* Invalid fs type */
 }
 

@@ -28,17 +28,17 @@ int main() {
     if (HARDCODE) {
       if (!strncmp("type", cmdBuff, 4)) {
         if (cmdBuff[5] != '/' || cmdBuff[6] < 'A') {
-          puts("Invalid arguments to type command\n");
+          puts("Invalid arguments to type command\n\r");
           /* exit(); */
         }
         len = strlen(&cmdBuff[5]);
         cmdBuff[5 + len] = '\0';
-        fread(&cmdBuff[5], fileBuff);
+        ffread(&cmdBuff[5], fileBuff);
         puts(fileBuff);
         /* exit(); */
       } else if(!strncmp("execute", cmdBuff, 7)) {
         if (cmdBuff[8] != '/' || cmdBuff[9] < 'A') {
-          puts("Invalid arguments to execute command\n");
+          puts("Invalid arguments to execute command\n\r");
         } else {
           exec(&cmdBuff[8], cmdBuff);
         }
@@ -47,7 +47,7 @@ int main() {
 
       } else if (!strncmp("delete", cmdBuff, 6)) {
         if (cmdBuff[7] != '/' || cmdBuff[8] < 'A') {
-          puts("Invalid arguments to delete command\n");
+          puts("Invalid arguments to delete command\n\r");
           /* exit(); */
         }
         len = strlen(&cmdBuff[7]);
@@ -55,7 +55,7 @@ int main() {
         fdel(&cmdBuff[7]);
       } else if (!strncmp("copy", cmdBuff, 4)) {
         if(cmdBuff[5] != '/' || cmdBuff[6] < 'A') {
-          puts("Invalid inputs to copy command\n");
+          puts("Invalid inputs to copy command\n\r");
           /* exit(); */
         }
 
@@ -66,34 +66,38 @@ int main() {
             break;
           }
           if(cmdBuff[c] == '\0') {
-            puts("Invalid output file\n");
+            puts("Invalid output file\n\r");
             /* exit(); */
           }
           c++;
         }
         c++;
-        fread(&cmdBuff[5], fileBuff);
+        ffread(&cmdBuff[5], fileBuff);
 
         if(cmdBuff[c] != '/' || cmdBuff[c + 1] < 'A') {
-          puts("Invalid output file\n");
+          puts("Invalid output file\n\r");
           /* exit(); */
         }
         len = strlen(&cmdBuff[c]);
         cmdBuff[c + len] = '\0';
-        fwrite(&cmdBuff[c], fileBuff);
+        ffwrite(&cmdBuff[c], fileBuff);
 
       } else if (!strncmp("dir", cmdBuff, 3)) {
         if (cmdBuff[4] != '/') {
-          puts("Invalid arguments to dir command\n");
+          puts("Invalid arguments to dir command\n\r");
           /* exit(); */
         }
         len = strlen(&cmdBuff[4]);
+        if (cmdBuff[3+len] != '/'){
+          len++;
+          cmdBuff[3+len] = '/';
+        } 
         cmdBuff[4 + len] = '\0';
         getDirList(&cmdBuff[4], fileBuff);
         for (i = 0; i < 13000; i += 256) {
           len = strlen(&fileBuff[i]);
           if (len == 0) {
-            /* exit(); */
+            break;
           } else {
             puts(&fileBuff[i]);
             puts("\r\n\0");
@@ -101,7 +105,7 @@ int main() {
         }
       } else if (!strncmp("create", cmdBuff, 6)) {
         if (cmdBuff[7] != '/' || cmdBuff[8] < 'A') {
-          puts("Invalid arguments to create command\n");
+          puts("Invalid arguments to create command\n\r");
           /* exit(); */
         }
         len = strlen(&cmdBuff[7]);
@@ -110,7 +114,7 @@ int main() {
           gets(temp);
           len = strlen(temp);
           if (len == 2) {
-            fwrite(&cmdBuff[7], fileBuff);
+            ffwrite(&cmdBuff[7], fileBuff);
             break;
           } else {
             for(i = 0; i < len; i++) {
@@ -120,16 +124,28 @@ int main() {
         }
       } else if (!strncmp("kill", cmdBuff, 4)) {
         if (cmdBuff[5] > 55 || cmdBuff[5] < 48) {
-          puts("Invalid process number. Must be between 0 and 7");
+          puts("Invalid process number. Must be between 0 and 7\n\r");
         } else {
           kill(cmdBuff[5] - 48);
         }
       } else if (!strncmp("execforeground", cmdBuff, 14)) {
         if (cmdBuff[15] != '/' || cmdBuff[16] < 'A') {
-          puts("Invalid arguments to execute command\n");
+          puts("Invalid arguments to execute command\n\r");
         } else {
           exec(&cmdBuff[15], 1);
         }
+      } else if (!strncmp("mkdir", cmdBuff, 3)) {
+        if (cmdBuff[6] != '/') {
+          puts("Invalid arguments to mkdir command\n\r");
+          /* exit(); */
+        }
+        len = strlen(&cmdBuff[6]);
+        if (cmdBuff[5+len] != '/'){
+          len++;
+          cmdBuff[5+len] = '/';
+        } 
+        cmdBuff[6 + len] = '\0';
+        fmkdir(&cmdBuff[6]);
       } else {
         puts("Unknown command: ");
         puts(cmdBuff);

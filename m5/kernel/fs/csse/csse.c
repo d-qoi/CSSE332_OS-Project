@@ -118,7 +118,7 @@ int csse_fopen(int openFileIndex) {
     setExtraSegmentToStackSegment();
     writeSectorTo(
       dirBuffer,
-      drive, 
+      drive,
       dirSector);
     restoreExtraSegment();
     memset(dirBuffer + i*32 + 6, 0, 26);
@@ -415,8 +415,14 @@ int csse_listFilesInDir(int drive, char * dname, char * buffer) {
   res = csse_readDir(drive, dname, dir, 0);
   restoreExtraSegment();
   
-  if (res < 0)
+  if (res < 0){
+    KDS
+    println("Invalid directory.");
+    SDS
+    
+    buffer[0] = '\0';
     return -1;
+  }
   memset(buffer, 0, 1024);
   for (i=0; i < 16; i++) {
     if (dir[i*32] == 0x0)
@@ -426,6 +432,7 @@ int csse_listFilesInDir(int drive, char * dname, char * buffer) {
     buffer += 256;
     count++;
   }
+  buffer[count*256] = '\0';
   return count;
 }
 
@@ -441,7 +448,7 @@ int csse_listFilesInDir(int drive, char * dname, char * buffer) {
  * returns the sector number of the found directory, -1 if not found
  **/
 int csse_readDir(int drive, char * dname, char * dirBuffer, int create) {
-  int nextSector = 2;
+  int i, nextSector = 2;
   
   /* read root directory */
   setExtraSegmentToStackSegment();
@@ -461,19 +468,34 @@ int csse_readDir(int drive, char * dname, char * dirBuffer, int create) {
     memcpy(nameSeg, dname+1, segLen);
 
     entryIndex = csse_findDirEntry(nameSeg, dirBuffer);
+    
+    /* If we cannot find the file, create one! */
     if (entryIndex < 0) {
       if (!create){
         return -1;
       }
-      else {
-        int i;
-        for (i = 0; i < 32; i++){
-          if (dirBuffer[i*32] == 0)
-            break;
-        }
-        if (i == 32)
-          return -1;
+      
+      /* Find free entry in the directory. */
+      
+      for (i = 0; i < 32; i++){
+        if (dirBuffer[i*32] == 0)
+          break;
       }
+      if (i == 32)
+        return -1;
+      entryIndex = i;
+      memcpy(dirBuffer + i*32, nameSeg, 6);
+      memset(dirBuffer + i*32 + 6, 0, 26);
+
+      /* Save modified directory and allocate new sector. */
+      setExtraSegmentToStackSegment();
+      writeSectorTo(
+        dirBuffer,
+        drive,
+        nextSector);
+      restoreExtraSegment();
+      nextSector = csse_openFileAssignNewSector(drive, nextSector, nameSeg);
+      
     }
 
     nextSector = dirBuffer[entryIndex*32 + 6];

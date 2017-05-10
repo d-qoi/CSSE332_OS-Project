@@ -29,16 +29,44 @@ void kill(int proc) {
 }
 
 
-void fread(char *fname, char *buf) {
+void ffread(char *fname, char *buf) {
   interrupt(0x21, 3, fname, buf, 0);
 }
 
-void fwrite(char *fname, char *buf) {
+void ffwrite(char *fname, char *buf) {
   interrupt(0x21, 8, fname, buf, 0);
 }
 
 void fdel(char *fname) {
   interrupt(0x21, 7, fname, 0, 0);
+}
+
+int fmkdir(char * path) {
+  int ret;
+  interrupt(0x21, 19, path, 0, &ret);
+  return ret;
+}
+
+int fopen(char * path, char mode) {
+  int ret;
+  interrupt(0x21, 15, path, mode, &ret);
+  return ret;
+}
+
+int fread(int fid, char * buffer, int bytes) {
+  interrupt(0x21, 16, fid, buffer, &bytes);
+  return bytes;
+}
+
+int fwrite(int fid, char * buffer, int bytes) {
+  interrupt(0x21, 17, fid, buffer, &bytes);
+  return bytes;
+}
+
+int fclose(int fid) {
+  int ret;
+  interrupt(0x21, 18, fid, 0, &ret);
+  return ret;
 }
 
 void getArgv(char * buffer) {

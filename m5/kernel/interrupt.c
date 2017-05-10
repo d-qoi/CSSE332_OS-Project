@@ -78,6 +78,24 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
       while(1); /* Don't let it return. */
       break;
     
+    case 15:
+      *((int *)dx) = fopen((char *) bx, (char) cx);
+      break;
+    case 16:
+      bytesRead = fread((int) bx, (char *) cx, *((int *) dx));
+      *((int *) dx) = bytesRead;
+      break;
+    case 17:
+      *((int *)dx) = fwrite((int) bx, (int) cx);
+      break;
+    case 18:
+      *((int *)dx) = fclose((int) bx);
+      break;
+    case 19:
+      *((int *)dx) = fmkdir((char *) bx);
+      break;
+      
+    
     case 20:
       KDS
       bytesRead = strlen(processTable[currentProcess].args);

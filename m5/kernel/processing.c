@@ -44,7 +44,6 @@ int executeProgram(char *path, char * args, int shouldWait) {
   for (i = 0; i < bytesRead; i++) {
     putInMemory(segment, i, buffer[i]);
   }
-  printHex(segment);
 
   initializeProgram(segment);
   return 0;
@@ -112,16 +111,10 @@ void handleTimerInterrupt(int segment, int sp) {
   for (i = 1; i <= PROCESSLIMIT; i++) {
     int pi = mod(currentProcess + i, PROCESSLIMIT);
     if (processTable[pi].running && processTable[pi].waiting == -1) {
-      if (pi != currentProcess){
-        println("Switching!");
-        printHex(sp);
-      }
       sp = processTable[pi].sp;
       segment = (pi + 2) * 0x1000;
       currentProcess = pi;
       break;
-      /*println("DA");
-      printHex(i);*/
     }
   }
     
