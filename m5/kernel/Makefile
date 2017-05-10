@@ -3,7 +3,7 @@
 # David Mehl, Christian Balcom, and Alexander Hirschfeld
 
 CFLAGS = -ansi -c
-LIST = kernel.o asm/kernel_asm.o interrupt.o vfs.o io.o lib/math.o lib/string.o fs/csse/csse.o processing.o
+LIST = kernel.o asm/kernel_asm.o interrupt.o vfs.o io.o mem.o lib/math.o lib/string.o fs/csse/csse.o processing.o
 
 ## Build the program from the object files (-o option)
 kernel: $(LIST)

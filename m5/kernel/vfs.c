@@ -5,6 +5,7 @@
  */
  
 #include "io.h"
+#include "mem.h"
 #include "vfs.h"
 #include "fs/csse/csse.h"
 #include "lib/math.h"
@@ -13,9 +14,11 @@
 int vfs_init() {
   int i;
   mountCount = 0;
+  KDS
   for(i = 0; i < MAX_FOPEN; i++) {
     openFileTable[i].open = 0x00;
   }
+  SDS
   csse_init();
 } 
 
@@ -29,23 +32,27 @@ int vfs_init() {
  * */
 int mountfs(char drive, char * path, int fsType) {
   int len;
-  char pathBuffer;
+  KDS
   
   if (mountCount == MAX_MOUNTS)
     return -1; /* Too many mounts. */
     
   /* Populate a new entry in the mountTable */
   mountTable[mountCount].drive = drive;
-  memcpy(mountTable[mountCount].path, path, 256);
+  memcpySK(mountTable[mountCount].path, path, 256);
   mountTable[mountCount].fsType = fsType;
   
   /* Verify path length and add trailing '/' */
   len = strlen(mountTable[mountCount].path);
-  if (len >= 255)
+  if (len >= 255){
+    SDS
     return -1; /* Too large of a path. */
+  }
   if (mountTable[mountCount].path[len-1] != '/') {
-    if (len > 254)
+    if (len > 254){
+      SDS
       return -1; /* No room to add trailing '/' */
+    }
     mountTable[mountCount].path[len] = '/';
     mountTable[mountCount].path[len+1] = '\0';
   }
@@ -53,11 +60,13 @@ int mountfs(char drive, char * path, int fsType) {
   mountCount++;
 
   /* Eventually we will have init by filesystem type */
+  SDS
   return 0;
 }
 
 /*
  * Finds the mount responsible for the resource at abspath
+ * assumes absPath and relPath are stack pointers
  * 
  * absPath: An absolute path to a resource.
  * relPath: A buffer to return the relative path to a resource.
@@ -66,16 +75,21 @@ int mountfs(char drive, char * path, int fsType) {
  * */
 int findMountAndRelPath(char * absPath, char  * relPath) {
   int maxMatched = 0, mountIndex = -1, i;
+  char tmp;
+  KDS
   
   /* Find the mount point and relative path. */
   for (i = 0; i < mountCount; i++){
     int matched, j;
     for (j = 0; j < 256; j++) {
+      KDS
       if (mountTable[i].path[j] == '\0') {
         matched = j;
         break;
       }
-      if (absPath[j] != mountTable[i].path[j]) {
+      tmp = mountTable[i].path[j];
+      SDS
+      if (absPath[j] != tmp) {
         matched = 0;
         break;
       }
@@ -84,7 +98,9 @@ int findMountAndRelPath(char * absPath, char  * relPath) {
       maxMatched = matched;
       mountIndex = i;
     }
+    KDS
   }
+  SDS
   
   if (maxMatched == 0) {
     /* Could not find mount point. */
@@ -115,8 +131,11 @@ int freaddir(char * path, char * buffer) {
     return -1;  /* Could not find mount. */
   }
   
+  KDS
   fsType = mountTable[mountIndex].fsType;
   drive = mountTable[mountIndex].drive;
+  SDS
+  
   if (fsType == FS_CSSE)
     return csse_listFilesInDir(drive, relPath, buffer);
   return -1; /* Invalid fs type */
@@ -129,35 +148,44 @@ int freaddir(char * path, char * buffer) {
  * mode: The mode ('r' or 'w') to open the file with.
  * */
 int fopen(char * path, char mode) {
-  int res, openFileIndex = 0, mountIndex;
-  
+  int res, openFileIndex = 0, mountIndex, fsType;
+  char relPath[256];
+    
   /* Find open file slot in table. */
   while (openFileIndex < MAX_FOPEN) {
+    KDS
     if (!openFileTable[openFileIndex].open)
       break;
     openFileIndex++;
   }
+  SDS
   if (openFileIndex == MAX_FOPEN) {
     return -1; /* Too many files open. */
   }
   
-  mountIndex = findMountAndRelPath(path, openFileTable[openFileIndex].relPath);
+  mountIndex = findMountAndRelPath(path, relPath);
+  memcpySK(openFileTable[openFileIndex].relPath, relPath, 256);
   if (mountIndex < 0)
     return -1; /* Could not find mount. */
   
   /* Copy parameters into slot. */
+  KDS
   openFileTable[openFileIndex].readWriteIndex = 0;
   openFileTable[openFileIndex].mode = mode;
   openFileTable[openFileIndex].mountIndex = mountIndex;
+  fsType = mountTable[mountIndex].fsType;
+  SDS
   
-  if (mountTable[mountIndex].fsType == FS_CSSE){
+  if (fsType == FS_CSSE){
     res = csse_fopen(openFileIndex);
     if (res < 0) 
       return -1; /* Problem. */
   }
   
   /* Mark file as open and be done! */
+  KDS
   openFileTable[openFileIndex].open = 0xFF;
+  SDS
   return openFileIndex;
 }
 
@@ -166,15 +194,17 @@ int fopen(char * path, char mode) {
  * 
  * */
 int fread(int openFileIndex, char * buffer, int count) {
-  int mountIndex;
+  int fsType;
   
   if (openFileIndex < 0 || openFileIndex > MAX_FOPEN){
     return -1; /* Invalid openFileIndex. */
   }
-  mountIndex = openFileTable[openFileIndex].mountIndex;
-  if (mountTable[mountIndex].fsType == FS_CSSE)
+  KDS
+  fsType = mountTable[openFileTable[openFileIndex].mountIndex].fsType;
+  SDS
+  
+  if (fsType == FS_CSSE)
     return csse_fread(openFileIndex, buffer, count);
-    
   return -1;
 }
 
@@ -183,24 +213,33 @@ int fread(int openFileIndex, char * buffer, int count) {
  * 
  * */
 int fwrite(int openFileIndex, char * buffer, int count) {
-  int mountIndex;
+  int mountIndex, fsType;
+  char mode;
   
   if (openFileIndex < 0 || openFileIndex > MAX_FOPEN){
     return -1; /* Invalid openFileIndex. */
   }
+  KDS
+  mode = openFileTable[openFileIndex].mode;
+  SDS
   
-  if (openFileTable[openFileIndex].mode != 'w')
+  if (mode != 'w')
     return -1; /* Must have write permissions. */
   
-  mountIndex = openFileTable[openFileIndex].mountIndex;
-  if (mountTable[mountIndex].fsType == FS_CSSE)
+  KDS
+  fsType = mountTable[openFileTable[openFileIndex].mountIndex].fsType;
+  SDS
+  
+  if (fsType == FS_CSSE)
     return csse_fwrite(openFileIndex, buffer, count);
     
   return -1;
 }
 
 int fjump(int openFileIndex, int readWriteIndex) {
+  KDS
   openFileTable[openFileIndex].readWriteIndex = readWriteIndex;
+  SDS
 }
 
 int fdel(char * path) {
@@ -210,10 +249,12 @@ int fdel(char * path) {
   mountIndex = findMountAndRelPath(path, relPath);
   if (mountIndex < 0)
     return -1; /* Could not find mount. */
-  
+  KDS
   if (mountTable[mountIndex].fsType == FS_CSSE){
+    SDS
     csse_fdel(mountTable[mountIndex].drive, relPath);
   }
+  SDS
 }
 
 /*
@@ -221,15 +262,19 @@ int fdel(char * path) {
  * 
  * */
 int fclose(int openFileIndex) {
-  int mountIndex;
+  int fsType;
   
   if (openFileIndex < 0 || openFileIndex > MAX_FOPEN){
     return -1; /* Invalid openFileIndex. */
   }
-  mountIndex = openFileTable[openFileIndex].mountIndex;
-  if (mountTable[mountIndex].fsType == FS_CSSE)
+  KDS
+  fsType = mountTable[openFileTable[openFileIndex].mountIndex].fsType;
+  SDS
+  if (fsType == FS_CSSE)
     csse_fclose(openFileIndex);
     
+  KDS
   openFileTable[openFileIndex].open = 0x00;  
+  SDS
   return 0;
 }

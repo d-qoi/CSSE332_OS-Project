@@ -7,15 +7,18 @@
 #include "csse.h"
 #include "../../vfs.h"
 #include "../../io.h"
+#include "../../mem.h"
 #include "../../lib/math.h"
 
 
 void csse_init() {
   int i;
+  KDS
   for (i = 0; i < CSSE_MAX_FOPEN; i++) {
     csse_openFileTable[i].open = 0x00;
     csse_openFileTable[i].loadedSectorIndex = -1;
   }
+  SDS
 }
 
 /*
@@ -26,26 +29,28 @@ void csse_init() {
  * returns: 0 if successful, -1 if not.
  * */
 int csse_fopen(int openFileIndex) {
-  int  i, csse_openFileIndex, dnameLen, fnameLen, entryIndex = 0;
+  int  i, csse_openFileIndex=0, dnameLen, fnameLen, dirSector, drive, entryIndex = 0;
   struct csse_openFile * csse_newOpenFile;
   struct openFile * newOpenFile;
-  char dirBuffer[512];
+  char dirBuffer[512], dname[256], fname[7];
   
   newOpenFile = openFileTable + openFileIndex;
   
   /* Find open file slot in table. */
+  KDS
   while (csse_openFileIndex < CSSE_MAX_FOPEN) {
     if (!csse_openFileTable[csse_openFileIndex].open)
       break;
     csse_openFileIndex++;
   }
+  SDS
   if (csse_openFileIndex == CSSE_MAX_FOPEN) {
     return -1; /* Too many files open. */
   }
   
-  csse_newOpenFile = csse_openFileTable + csse_openFileIndex;
-  
   /* Save values to table */
+  KDS
+  csse_newOpenFile = csse_openFileTable + csse_openFileIndex;
   csse_newOpenFile->openFileIndex = openFileIndex;
   csse_newOpenFile->loadedSectorIndex = -1;
   csse_newOpenFile->sectorWrites = 0x00;
@@ -63,30 +68,44 @@ int csse_fopen(int openFileIndex) {
   memcpy(csse_newOpenFile->dname, newOpenFile->relPath, dnameLen);
   memset(csse_newOpenFile->fname, 0, 7);
   memcpy(csse_newOpenFile->fname, newOpenFile->relPath + dnameLen, fnameLen);
+  
+  drive = mountTable[newOpenFile->mountIndex].drive;
+  
+  memcpyKS(dname, csse_newOpenFile->dname, 256);
+  memcpyKS(fname, csse_newOpenFile->fname, 7);
+  SDS
 
   /* Load parent directory into dirBuffer. */
   setExtraSegmentToStackSegment();
-  csse_newOpenFile->dirSector = csse_readDir(
-    mountTable[newOpenFile->mountIndex].drive,
-    csse_newOpenFile->dname,
-    dirBuffer,
-    0);
+  dirSector = csse_readDir(drive, dname, dirBuffer, 0);
   restoreExtraSegment();
-
-  if (csse_newOpenFile->dirSector < 0){
+  
+  if (dirSector < 0){
+    KDS
+    println("Invalid directory.");
+    SDS
     return -1; /* We had a problem reading the directory. */
   }
+  
+  KDS
+  csse_newOpenFile->dirSector = dirSector;
+  SDS
 
-  entryIndex = csse_findDirEntry(
-    csse_newOpenFile->fname, 
-    dirBuffer);
+  entryIndex = csse_findDirEntry(fname, dirBuffer);
   
   /* If we cannot find the file, create one! */
   if (entryIndex < 0) {
-    println("Could not find file.");
-    if (newOpenFile->mode != 'w')
+    KDS
+    
+    if (newOpenFile->mode != 'w'){
+      println("Read-only file mode: cannot create file.");
+      SDS
       return -1;
+    }
+    SDS
+    
     /* Find free entry in the directory. */
+    
     for (i = 0; i < 32; i++){
       if (dirBuffer[i*32] == 0)
         break;
@@ -94,23 +113,25 @@ int csse_fopen(int openFileIndex) {
     if (i == 32)
       return -1;
     entryIndex = i;
-    memcpy(dirBuffer + i*32, csse_newOpenFile->fname, 6);
+    memcpy(dirBuffer + i*32, fname, 6);
 
     setExtraSegmentToStackSegment();
     writeSectorTo(
       dirBuffer,
-      mountTable[newOpenFile->mountIndex].drive, 
-      csse_newOpenFile->dirSector);
+      drive, 
+      dirSector);
     restoreExtraSegment();
     memset(dirBuffer + i*32 + 6, 0, 26);
 
   }
 
   /* Read sector list from directory. */
-  memcpy(csse_newOpenFile->sectors, dirBuffer + entryIndex*32 + 6, 26);
+  KDS
+  memcpySK(csse_newOpenFile->sectors, dirBuffer + entryIndex*32 + 6, 26);
   
   /* We are succesfull! */
   csse_newOpenFile->open = 0xFF;
+  SDS
   return 0;
 }
 
@@ -127,22 +148,26 @@ int csse_fopen(int openFileIndex) {
  * */
 int csse_fread(int openFileIndex, char * buffer, int count) {
   int res, bytesRead, csse_openFileIndex;
+  char tmp;
   struct openFile * currOpenFile;
   struct csse_openFile * csse_currOpenFile;
-  
+
+  KDS
   currOpenFile = openFileTable + openFileIndex;
   
   /* Find csse_openFile */
   for (csse_openFileIndex = 0; csse_openFileIndex < CSSE_MAX_FOPEN; csse_openFileIndex++) {
     if (!csse_openFileTable[csse_openFileIndex].open)
       continue;
+
     if (csse_openFileTable[csse_openFileIndex].openFileIndex == openFileIndex){
       csse_currOpenFile = csse_openFileTable + csse_openFileIndex;
       break;
     }
   }
   if (csse_openFileIndex == CSSE_MAX_FOPEN) {
-    println("Did not find stuff");
+    println("Invalid file index.");
+    SDS
     return -1; /* Did not find csse_openFile! */
   }
   
@@ -151,20 +176,26 @@ int csse_fread(int openFileIndex, char * buffer, int count) {
     /* Load next sector if necessary. */
     if (div(currOpenFile->readWriteIndex, 512) != csse_currOpenFile->loadedSectorIndex){
       /* Write current sector if modified. */
-      if (csse_currOpenFile->sectorWrites && currOpenFile->mode == 'w')
+      if (csse_currOpenFile->sectorWrites && currOpenFile->mode == 'w'){
         csse_openFileWriteCurrSector(csse_openFileIndex);
+      }
       /* Load next sector. */
       res = csse_openFileLoadNextSector(csse_openFileIndex);
       if (res < 0)
         break;
     }
-    *buffer = csse_currOpenFile->loadedSectorBuffer[mod(currOpenFile->readWriteIndex, 512)];
+    
+    tmp = csse_currOpenFile->loadedSectorBuffer[mod(currOpenFile->readWriteIndex, 512)];
+    SDS
+    *buffer = tmp;
     buffer++;
     bytesRead++;
-    currOpenFile->readWriteIndex++;
     count--;
+    
+    KDS
+    currOpenFile->readWriteIndex++;
   }
-
+  SDS
   return bytesRead;
 }
 
@@ -182,10 +213,12 @@ int csse_fwrite(int openFileIndex, char * buffer, int count) {
   int res, bytesWritten, csse_openFileIndex;
   struct openFile * currOpenFile;
   struct csse_openFile * csse_currOpenFile;
+  char tmp;
   
   currOpenFile = openFileTable + openFileIndex;
   
   /* Find csse_openFile */
+  KDS
   for (csse_openFileIndex = 0; csse_openFileIndex < CSSE_MAX_FOPEN; csse_openFileIndex++) {
     if (!csse_openFileTable[csse_openFileIndex].open)
       continue;
@@ -195,7 +228,8 @@ int csse_fwrite(int openFileIndex, char * buffer, int count) {
     }
   }
   if (csse_openFileIndex == CSSE_MAX_FOPEN) {
-    println("Did not find stuff");
+    println("Invalid file index.");
+    SDS
     return -1; /* Did not find csse_openFile! */
   }
 
@@ -211,12 +245,16 @@ int csse_fwrite(int openFileIndex, char * buffer, int count) {
       res = csse_openFileLoadNextSector(csse_openFileIndex);
 
       if (res < 0){
+        int drive = mountTable[currOpenFile->mountIndex].drive;
+        int dirSector = csse_currOpenFile->dirSector;
+        char fname[7];
+        
+        memcpyKS(fname, csse_currOpenFile->fname, 7);
         
         /* Generate new sector. */
-        res = csse_openFileAssignNewSector(
-          mountTable[currOpenFile->mountIndex].drive, 
-          csse_currOpenFile->dirSector, 
-          csse_currOpenFile->fname);
+        SDS
+        res = csse_openFileAssignNewSector(drive, dirSector, fname);
+        KDS
 
         if (res < 0) {
           println("Cannot gen new sector!");
@@ -228,18 +266,24 @@ int csse_fwrite(int openFileIndex, char * buffer, int count) {
           println("Wat, I thought I fixed that..");
       }
     }
-    csse_currOpenFile->loadedSectorBuffer[mod(currOpenFile->readWriteIndex, 512)] = *buffer;
+    SDS
+    tmp = *buffer;
+    KDS
+    csse_currOpenFile->loadedSectorBuffer[mod(currOpenFile->readWriteIndex, 512)] = tmp;
     csse_currOpenFile->sectorWrites = 0xFF;
     buffer++;
     bytesWritten++;
     currOpenFile->readWriteIndex++;
     count--;
   }
+  SDS
   return bytesWritten;
 }
 
 /*
  * Loads the sector at the current rwIndex into loadedSectorBuffer
+ * 
+ * Assumes and returns KDS
  * 
  * csse_openFileIndex: An index to a csse_openFile to perform this on.
  * 
@@ -272,6 +316,7 @@ int csse_openFileLoadNextSector(int csse_openFileIndex) {
 /*
  * Find and assign a new sector to an open file.
  * 
+ * 
  * drive: A drive ID.
  * dirSector: The sector of the directory block
  * fname: A filename
@@ -292,7 +337,7 @@ int csse_openFileAssignNewSector(int drive, int dirSector, char * fname) {
   
   dirEntry = csse_findDirEntry(fname, dirBuffer);
   if (dirEntry < 0)
-    println("Found it");
+    return -1;
   
   /* Check if there is a slot for a new sector in the directory. */
   for (sectorSlot = 0; sectorSlot < 26; sectorSlot++) {
@@ -325,6 +370,8 @@ int csse_openFileAssignNewSector(int drive, int dirSector, char * fname) {
 
 /*
  * Loads the sector at the current rwIndex into loadedSectorBuffer
+ * 
+ * Assumes KDS
  * 
  * csse_openFileIndex: An index to a csse_openFile to perform this on.
  * 
@@ -397,7 +444,9 @@ int csse_readDir(int drive, char * dname, char * dirBuffer, int create) {
   int nextSector = 2;
   
   /* read root directory */
+  setExtraSegmentToStackSegment();
   readSectorFrom(dirBuffer, drive, 2);
+  restoreExtraSegment();
 
   while (*(dname+1) != '\0') {
     int segLen, entryIndex;
@@ -428,7 +477,9 @@ int csse_readDir(int drive, char * dname, char * dirBuffer, int create) {
     }
 
     nextSector = dirBuffer[entryIndex*32 + 6];
+    setExtraSegmentToStackSegment();
     readSectorFrom(dirBuffer, drive, nextSector);
+    restoreExtraSegment();
     
     dname = nextSlash;
   }
@@ -458,7 +509,9 @@ int csse_findDirEntry(char * fname, char * dir) {
     /* Check if the characters in fname match those in the dir entry.*/
     while (fname[j] != '\0') {
       if (j == 6){
-        println("Invalid stuff");
+        KDS
+        println("Invalid filename: longer than six characters.");
+        SDS
         return -1; /* Filename longer than six characters, invalid! */
       }
       if (dir[i*32+j] != fname[j]) {
@@ -487,6 +540,8 @@ void csse_fclose(int openFileIndex) {
   int csse_openFileIndex;
   struct openFile * currOpenFile;
   struct csse_openFile * csse_currOpenFile;
+  
+  KDS
     
   currOpenFile = openFileTable + openFileIndex;
   
@@ -500,7 +555,8 @@ void csse_fclose(int openFileIndex) {
     }
   }
   if (csse_openFileIndex == CSSE_MAX_FOPEN) {
-    println("Did not find stuff");
+    println("Invalid file index.");
+    SDS
     return; /* Did not find csse_openFile! */
   }
   
@@ -509,6 +565,7 @@ void csse_fclose(int openFileIndex) {
     csse_openFileWriteCurrSector(csse_openFileIndex);
   
   csse_currOpenFile->open = 0x00;
+  SDS
 }
 
 

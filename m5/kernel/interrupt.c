@@ -5,6 +5,7 @@
  */
 
 #include "io.h"
+#include "mem.h"
 #include "vfs.h"
 #include "fs/csse/csse.h"
 #include "interrupt.h"
@@ -13,17 +14,9 @@
 
 void handleInterrupt21(int ax, int bx, int cx, int dx) {
   int f, bytesRead;
-  printHex(cx);
-  setDataSegmentToKernel();
-  printHex(cx);
   
   switch (ax) {
     case 0: /* Print *bx as a string */
-      
-      println("Trying to print!");
-      
-      /*printHex(((char *)bx)[0]);
-      printHex(((char *)bx)[1]);*/
       printString((char *) bx);
       break;
       
@@ -74,12 +67,14 @@ void handleInterrupt21(int ax, int bx, int cx, int dx) {
 
     case 10:
       terminate(bx);
+      while(1); /* Don't let it return. */
       break;
 
     case 11:
       terminate(currentProcess);
+      while(1); /* Don't let it return. */
       break;
   }
-  restoreDataSegment();
+  SDS
 }
 

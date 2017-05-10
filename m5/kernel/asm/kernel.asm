@@ -17,8 +17,8 @@
 	.global _setExtraSegmentToDataSegment
   .global _setExtraSegmentToStackSegment
 	.global _restoreExtraSegment
-  .global _setDataSegmentToKernel
-  .global _restoreDataSegment
+  .global _setKernelDataSegment
+  .global _setStackDataSegment
   .global _getDataSegment
   .global _getCodeSegment
   .global _getStackSegment
@@ -310,21 +310,17 @@ _restoreExtraSegment:
         ret
 
 ;void setDataSegmentToKernel()
-;saves ds to the stack and sets ds to 0x1000
-_setDataSegmentToKernel:
-        pop bx
-        push ds
-        push bx
-        mov ax,#0x1000
-        mov ds,ax
+;sets ds to 0x1000
+_setKernelDataSegment:
+        mov ax,#0x1000;
+        mov ds,ax;
         ret
 
 ;void restoreDataSegment()
-;restores ds fom the stack
-_restoreDataSegment:
-        pop bx
-        pop ds
-        push bx
+;sets ds to ss
+_setStackDataSegment:
+        mov ax,ss;
+        mov ds,ax;
         ret
 
 _getDataSegment:

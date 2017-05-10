@@ -54,12 +54,8 @@ void printString(char * string) {
 }
 
 void println(char * string) {
-  char lineEnd[3];
-  lineEnd[0] = '\n';
-  lineEnd[1] = '\r';
-  lineEnd[2] = '\0';
   printString(string);
-  printString(lineEnd);
+  printString("\n\r");
 }
 
 void readString(char * buffer) {

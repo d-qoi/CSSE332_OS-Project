@@ -36,15 +36,16 @@ int main() {
   println("Mounting /");
   mountfs(0, "/", FS_CSSE);
   
+  println("Mounting /mnt/test");
+  mountfs(1, "/mnt/test", FS_CSSE);
   /*println("Opening /var/messag");
-  
-  
-  println("Opening /var/test");
-  f2 = fopen("/var/test", 'w');
+  f1 = fopen("/var/messag", 'r');
 
   println("Reading from file!");
-
-
+  fread(f1, buffer, CSSE_MAX_FSIZE);
+  printString(buffer);
+  while(1);
+  /*
   println("Writing into file!");
   fwrite(f2, buffer, 512);
   
